@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16.3)
 
 project(chess-engine)
 
-add_executable(chess main.cpp)
+set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(src)
-include_directories(src)
+add_subdirectory(tests)

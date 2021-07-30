@@ -1,2 +1,9 @@
-add_library(board board.h board.cpp)
-add_library(moveGen moveGen.h moveGen.cpp)
+set(BINARY ${CMAKE_PROJECT_NAME})
+
+set(SOURCES
+  main.cpp
+  board.cpp
+  moveGen.cpp
+)
+
+add_executable(${BINARY} ${SOURCES})
