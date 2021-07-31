@@ -14,8 +14,6 @@ enum boardType {
   kings
 };
 
-
-
 class board {
   public:
     board();

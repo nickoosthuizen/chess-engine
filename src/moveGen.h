@@ -12,4 +12,9 @@ uint64_t oneNoWest(uint64_t b);
 uint64_t oneSoEast(uint64_t b);
 uint64_t oneSoWest(uint64_t b);
 
+uint64_t whitePawnPush(uint64_t whitePawns, uint64_t empty);
+uint64_t whitePawnPushTwo(uint64_t whitePawns, uint64_t empty);
+uint64_t blackPawnPush(uint64_t blackPawns, uint64_t empty);
+uint64_t blackPawnPushTwo(uint64_t blackPawns, uint64_t empty);
+
 #endif
