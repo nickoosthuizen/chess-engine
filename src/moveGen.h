@@ -17,4 +17,7 @@ uint64_t whitePawnPushTwo(uint64_t whitePawns, uint64_t empty);
 uint64_t blackPawnPush(uint64_t blackPawns, uint64_t empty);
 uint64_t blackPawnPushTwo(uint64_t blackPawns, uint64_t empty);
 
+uint64_t whitePawnAttack(uint64_t whitePawns, uint64_t blackPieces);
+uint64_t blackPawnAttack(uint64_t blackPawns, uint64_t whitePieces);
+
 #endif
