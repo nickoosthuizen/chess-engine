@@ -1,0 +1,62 @@
+#include <gtest/gtest.h>
+
+#include "moveGen.h"
+
+TEST(shiftTests, northSouthOut) {
+  EXPECT_EQ(oneSouth(0x0000000000000001), 0);
+  EXPECT_EQ(oneSouth(0x00000000000000FF), 0);
+  EXPECT_EQ(oneNorth(0xFF00000000000000), 0);
+  EXPECT_EQ(oneNorth(0x8000000000000000), 0);
+}
+
+TEST(shiftTests, eastWestOut) {
+  EXPECT_EQ(oneEast(0x0000010000000000), 0);
+  EXPECT_EQ(oneEast(0x0000000000FF0000), 0x00000000007F0000);
+  EXPECT_EQ(oneWest(0x0000800000000000), 0);
+  EXPECT_EQ(oneWest(0x0000000000FF0000), 0x0000000000FE0000);
+}
+
+TEST(shiftTests, diagonalOut) {
+  EXPECT_EQ(oneNoEast(0x0001000000000000), 0);
+  EXPECT_EQ(oneNoWest(0x0080000000000000), 0);
+  EXPECT_EQ(oneSoEast(0x0001000000000000), 0);
+  EXPECT_EQ(oneSoWest(0x0080000000000000), 0);
+}
+
+TEST(shiftTests, genNorth) {
+  EXPECT_EQ(oneNorth(0x0000000800000000), 0x0000080000000000);
+  EXPECT_EQ(oneNorth(0x0000000000002900), 0x0000000000290000);
+  EXPECT_EQ(oneNorth(0x00000000000000FF), 0x000000000000FF00);
+}
+
+TEST(shiftTests, genSouth) {
+  EXPECT_EQ(oneSouth(0x0000080000000000), 0x0000000800000000);
+  EXPECT_EQ(oneSouth(0x0000000000290000), 0x0000000000002900);
+  EXPECT_EQ(oneSouth(0x000000000000FF00), 0x00000000000000FF);
+}
+
+TEST(shiftTests, genEast) {
+  EXPECT_EQ(oneEast(0x20), 0x10);
+  EXPECT_EQ(oneEast(0x98), 0x4C);
+}
+
+TEST(shiftTests, genWest) {
+  EXPECT_EQ(oneWest(0x10), 0x20);
+  EXPECT_EQ(oneWest(0x4C), 0x98);
+}
+
+TEST(shiftTests, genNoEast) {
+  EXPECT_EQ(oneNoEast(0x008052), 0x402900);
+}
+
+TEST(shiftTests, genSoEast) {
+  EXPECT_EQ(oneSoEast(0x008052), 0x000040);
+}
+
+TEST(shiftTests, genNoWest) {
+  EXPECT_EQ(oneNoWest(0x008052), 0x00A400);
+}
+
+TEST(shiftTests, genSoWest) {
+  EXPECT_EQ(oneSoWest(0x008052), 0x000000);
+}

@@ -3,13 +3,13 @@
 
 #include <cstdint>
 
-uint64_t nNorth(int n, uint64_t b);
-uint64_t nSouth(int n, uint64_t b);
-uint64_t nWest(int n, uint64_t b);
-uint64_t nEast(int n, uint64_t b);
-uint64_t nNorWest(int n, uint64_t b);
-uint64_t nNorEast(int n, uint64_t b);
-uint64_t nSoWest(int n, uint64_t b);
-uint64_t nSoEast(int n, uint64_t b);
+uint64_t oneNorth(uint64_t b);
+uint64_t oneSouth(uint64_t b);
+uint64_t oneEast(uint64_t b);
+uint64_t oneWest(uint64_t b);
+uint64_t oneNoEast(uint64_t b);
+uint64_t oneNoWest(uint64_t b);
+uint64_t oneSoEast(uint64_t b);
+uint64_t oneSoWest(uint64_t b);
 
 #endif

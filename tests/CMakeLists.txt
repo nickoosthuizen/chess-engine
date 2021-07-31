@@ -3,6 +3,7 @@ set(BINARY ${CMAKE_PROJECT_NAME}_test)
 set(SOURCES 
   main.cpp
   boardTests.cpp
+  moveGenTests.cpp
   ../src/moveGen.cpp
   ../src/board.cpp 
 )

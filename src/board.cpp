@@ -1,5 +1,7 @@
-#include "board.h"
 #include <cstdint>
+
+#include "board.h"
+#include "constants.h"
 
 board::board() {
   m_boards[white] = WHITE_START;

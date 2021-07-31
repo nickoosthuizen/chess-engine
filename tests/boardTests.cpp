@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "board.h"
-#include "moveGen.h"
+#include "constants.h"
 
 TEST(boardTests, initialization) {
   board b;
