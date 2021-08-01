@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "moveGen.h"
+#include "constants.h"
 
 TEST(shiftTests, northSouthOut) {
   EXPECT_EQ(oneSouth(0x0000000000000001), 0);
@@ -103,4 +104,10 @@ TEST(pawnTests, blackPawnAttack) {
   EXPECT_EQ(blackPawnAttack(0x00020000, 0x0000FF00), 0x00000500);
   EXPECT_EQ(blackPawnAttack(0x00020000, 0xFF00FF00), 0x00000500);
   EXPECT_EQ(blackPawnAttack(0xFF000000, 0x00FF0000), 0x00FF0000);
+}
+
+TEST(knightTests, knightMoves) {
+  EXPECT_EQ(knightMove(WHITE_START & KNIGHT_START, ~(BLACK_START | WHITE_START)), 0x0000000000A50000);
+  EXPECT_EQ(knightMove(BLACK_START & KNIGHT_START, ~(BLACK_START | WHITE_START)), 0x0000A50000000000);
+  EXPECT_EQ(knightMove(0x0000100000, 0xFFFFFFFFFF), 0x2844004428);
 }
