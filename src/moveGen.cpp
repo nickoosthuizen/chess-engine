@@ -36,7 +36,7 @@ uint64_t blackPawnAttack(uint64_t blackPawns, uint64_t whitePieces) {
   return (oneSoWest(blackPawns) | oneSoEast(blackPawns)) & whitePieces;
 }
 
-uint64_t knightMove(uint64_t knights, uint64_t emptyOrPieces) {
+uint64_t knightMove(uint64_t knights, uint64_t empty, uint64_t pieces) {
   uint64_t newKnights = 0;
   uint64_t temp = 0;
   temp = oneNoWest(knights);
@@ -46,80 +46,74 @@ uint64_t knightMove(uint64_t knights, uint64_t emptyOrPieces) {
   temp = oneSoWest(knights);
   newKnights = newKnights | oneWest(temp) | oneSouth(temp);
   temp = oneSoEast(knights);
-  newKnights = (newKnights | oneEast(temp) | oneSouth(temp)) & emptyOrPieces;
+  newKnights = (newKnights | oneEast(temp) | oneSouth(temp)) & (empty | pieces);
   return newKnights;
 }
 
-uint64_t bishopPush(uint64_t bishops, uint64_t empty) {
-  uint64_t bishopPushBoard = 0;
+uint64_t bishopMove(uint64_t bishops, uint64_t empty, uint64_t pieces) {
+  uint64_t bishopMoveBoard = 0;
   uint64_t temp = bishops;
   while (temp) {
-    temp = oneNoWest(temp) & empty;
-    bishopPushBoard = bishopPushBoard | temp;
+    temp = oneNoWest(temp);
+    bishopMoveBoard |= (temp & (empty | pieces));
+    temp &= empty;
   }
   temp = bishops;
   while (temp) {
-    temp = oneNoEast(temp) & empty;
-    bishopPushBoard = bishopPushBoard | temp;
+    temp = oneNoEast(temp);
+    bishopMoveBoard |= (temp & (empty | pieces));
+    temp &= empty;
   }
   temp = bishops;
   while (temp) {
-    temp = oneSoWest(temp) & empty;
-    bishopPushBoard = bishopPushBoard | temp;
+    temp = oneSoWest(temp);
+    bishopMoveBoard |= (temp & (empty | pieces));
+    temp &= empty;
   }
   temp = bishops;
-  while (temp) {
-    temp = oneSoEast(temp) & empty;
-    bishopPushBoard = bishopPushBoard | temp;
+  while(temp) {
+    temp = oneSoEast(temp);
+    bishopMoveBoard |= (temp & (empty | pieces));
+    temp &= empty;
   }
-  return bishopPushBoard;
+  return bishopMoveBoard;
 }
 
-uint64_t bishopAttack(uint64_t bishopPushBoard, uint64_t pieces) {
-  return oneNoWest(bishopPushBoard) | oneNoEast(bishopPushBoard) | 
-         oneSoWest(bishopPushBoard) | oneSoEast(bishopPushBoard) & pieces;
-}
-
-uint64_t rookPush(uint64_t rooks, uint64_t empty) {
-  uint64_t rookPushBoard = 0;
+uint64_t rookMove(uint64_t rooks, uint64_t empty, uint64_t pieces) {
+  uint64_t rookMoveBoard = 0;
   uint64_t temp = rooks;
   while (temp) {
-    temp = oneNorth(temp) & empty;
-    rookPushBoard = rookPushBoard | temp;
+    temp = oneNorth(temp);
+    rookMoveBoard |= (temp & (empty | pieces));
+    temp &= empty;
   }
   temp = rooks;
   while (temp) {
-    temp = oneSouth(temp) & empty;
-    rookPushBoard = rookPushBoard | temp;
+    temp = oneSouth(temp);
+    rookMoveBoard |= (temp & (empty | pieces));
+    temp &= empty;
   }
   temp = rooks;
   while (temp) {
-    temp = oneWest(temp) & empty;
-    rookPushBoard = rookPushBoard | temp;
+    temp = oneWest(temp);
+    rookMoveBoard |= (temp & (empty | pieces));
+    temp &= empty;
   }
   temp = rooks;
   while (temp) {
-    temp = oneEast(temp) & empty;
-    rookPushBoard = rookPushBoard | temp;
+    temp = oneEast(temp);
+    rookMoveBoard |= (temp & (empty | pieces));
+    temp &= empty;
   }
-  return rookPushBoard;
+  return rookMoveBoard;
 }
 
-uint64_t rookAttack(uint64_t rookPushBoard, uint64_t pieces) {
-  return oneNorth(rookPushBoard) | oneSouth(rookPushBoard) | oneWest(rookPushBoard) |
-          oneEast(rookPushBoard) & pieces;
+uint64_t queenMove(uint64_t queen, uint64_t empty, uint64_t pieces) {
+  return bishopMove(queen, empty, pieces) | rookMove(queen, empty, pieces);
 }
 
-uint64_t queenPush(uint64_t queen, uint64_t empty) {
-  return rookPush(queen, empty) | bishopPush(queen, empty);
-}
-
-uint64_t queenAttack(uint64_t queenPushBoard, uint64_t pieces) {
-  return rookAttack(queenPushBoard, pieces) | bishopAttack(queenPushBoard, pieces);
-}
-
-uint64_t kingMove(uint64_t king, uint64_t emptyOrPieces) {
+uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces) {
   return oneNoWest(king) | oneNorth(king) | oneNoEast(king) | oneEast(king) |
           oneSoEast(king) | oneSouth(king) | oneSoWest(king) | oneWest(king) & 
-           emptyOrPieces;
+           (empty | pieces);
 }
