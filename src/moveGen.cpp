@@ -1,4 +1,7 @@
+#include <vector>
+
 #include "moveGen.h"
+#include "board.h"
 #include "constants.h"
 
 uint64_t oneNorth(uint64_t b) { return b << 8; }
@@ -9,6 +12,16 @@ uint64_t oneNoEast(uint64_t b) { return (b & NOT_FILE_H) << 7; }
 uint64_t oneNoWest(uint64_t b) { return (b & NOT_FILE_A) << 9; }
 uint64_t oneSoEast(uint64_t b) { return (b & NOT_FILE_H) >> 9; }
 uint64_t oneSoWest(uint64_t b) { return (b & NOT_FILE_A) >> 7; }
+
+void isolateBits(std::vector<uint64_t> &boards, uint64_t b) {
+  uint64_t lsb;
+  while (b) {
+    lsb = b & -b;
+    boards.push_back(lsb);
+    b ^= lsb;
+  }
+  return;
+}
 
 uint64_t whitePawnPush(uint64_t whitePawns, uint64_t empty) {
   return oneNorth(whitePawns) & empty;
@@ -34,6 +47,49 @@ uint64_t whitePawnAttack(uint64_t whitePawns, uint64_t blackPieces) {
 
 uint64_t blackPawnAttack(uint64_t blackPawns, uint64_t whitePieces) {
   return (oneSoWest(blackPawns) | oneSoEast(blackPawns)) & whitePieces;
+}
+
+void generatePawnBoards(std::vector<Board> &newBoards, Board current, boardType color) {
+  boardType opponent;
+  color == white ? opponent = black : opponent = white;
+  std::vector<uint64_t> individualPawns, attackBoards;
+  isolateBits(individualPawns, current.getBByTypeAndColor(pawns, color));
+  uint64_t onePushBoard, twoPushBoard;
+  Board newBoard;
+  for (int i = 0; i < individualPawns.size(); i++) {
+    attackBoards.clear();
+    if (color == white) {
+      onePushBoard = whitePawnPush(individualPawns[i], current.getEmptySquares());
+      twoPushBoard = whitePawnPushTwo(individualPawns[i], current.getEmptySquares());
+      isolateBits(attackBoards, whitePawnAttack(individualPawns[i], current.getBByType(black)));
+    }
+    else {
+      onePushBoard = blackPawnPush(individualPawns[i], current.getEmptySquares());
+      twoPushBoard = blackPawnPushTwo(individualPawns[i], current.getEmptySquares());
+      isolateBits(attackBoards, whitePawnAttack(individualPawns[i], current.getBByType(white)));
+    }
+    if (onePushBoard) {
+      newBoard = current;
+      newBoard.movePiece(individualPawns[i], onePushBoard, pawns, color);
+      // Figure out a better way to handle this
+      newBoard.setEnPassat(0, !color);
+      newBoards.push_back(newBoard);
+    }
+    if (twoPushBoard) {
+      newBoard = current;
+      newBoard.movePiece(individualPawns[i], twoPushBoard, pawns, color);
+      newBoard.setEnPassat(onePushBoard, color);
+      newBoard.setEnPassat(0, !color);
+      newBoards.push_back(newBoard);
+    }
+    for (int j = 0; j < attackBoards.size(); j++) {
+      newBoard = current;
+      newBoard.takePiece(individualPawns[i], attackBoards[i], pawns, color);
+      newBoard.setEnPassat(0, !color);
+      newBoards.push_back(newBoard);
+    }
+  }
+  return;
 }
 
 uint64_t knightMove(uint64_t knights, uint64_t empty, uint64_t pieces) {
@@ -116,4 +172,11 @@ uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces) {
   return oneNoWest(king) | oneNorth(king) | oneNoEast(king) | oneEast(king) |
           oneSoEast(king) | oneSouth(king) | oneSoWest(king) | oneWest(king) & 
            (empty | pieces);
+}
+
+void generateMoves(std::vector<Board> &newBoards, Board current, int turn) {
+  if (0 < newBoards.size()) {
+    newBoards.clear();
+  }
+
 }

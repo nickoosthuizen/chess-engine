@@ -4,7 +4,7 @@
 #include "constants.h"
 
 TEST(boardTests, initialization) {
-  board b;
+  Board b;
   EXPECT_EQ(b.getAllPieces(), WHITE_START | BLACK_START);
   EXPECT_EQ(b.getEmptySquares(), 0x0000FFFFFFFF0000);
   EXPECT_EQ(b.getBByType(white), WHITE_START);
