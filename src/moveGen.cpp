@@ -49,43 +49,42 @@ uint64_t blackPawnAttack(uint64_t blackPawns, uint64_t whitePieces) {
   return (oneSoWest(blackPawns) | oneSoEast(blackPawns)) & whitePieces;
 }
 
-void generatePawnBoards(std::vector<Board> &newBoards, Board current, boardType color) {
-  boardType opponent;
-  color == white ? opponent = black : opponent = white;
+void generatePawnBoards(std::vector<Board> &newBoards, Board current, color c) {
   std::vector<uint64_t> individualPawns, attackBoards;
-  isolateBits(individualPawns, current.getBByTypeAndColor(pawns, color));
+  isolateBits(individualPawns, current.getBByPieceAndColor(pawns, c));
   uint64_t onePushBoard, twoPushBoard;
   Board newBoard;
   for (int i = 0; i < individualPawns.size(); i++) {
     attackBoards.clear();
-    if (color == white) {
+    if (c == white) {
       onePushBoard = whitePawnPush(individualPawns[i], current.getEmptySquares());
       twoPushBoard = whitePawnPushTwo(individualPawns[i], current.getEmptySquares());
-      isolateBits(attackBoards, whitePawnAttack(individualPawns[i], current.getBByType(black)));
+      isolateBits(attackBoards, whitePawnAttack(individualPawns[i], current.getBByColor(black) | current.getBByPiece(enPassat)));
     }
     else {
       onePushBoard = blackPawnPush(individualPawns[i], current.getEmptySquares());
       twoPushBoard = blackPawnPushTwo(individualPawns[i], current.getEmptySquares());
-      isolateBits(attackBoards, whitePawnAttack(individualPawns[i], current.getBByType(white)));
+      isolateBits(attackBoards, whitePawnAttack(individualPawns[i], current.getBByColor(white) | current.getBByPiece(enPassat)));
     }
     if (onePushBoard) {
       newBoard = current;
-      newBoard.movePiece(individualPawns[i], onePushBoard, pawns, color);
+      newBoard.movePiece(individualPawns[i], onePushBoard, pawns, c);
       // Figure out a better way to handle this
-      newBoard.setEnPassat(0, !color);
+      newBoard.setPiece(0, enPassat);
       newBoards.push_back(newBoard);
     }
     if (twoPushBoard) {
       newBoard = current;
-      newBoard.movePiece(individualPawns[i], twoPushBoard, pawns, color);
-      newBoard.setEnPassat(onePushBoard, color);
-      newBoard.setEnPassat(0, !color);
+      newBoard.movePiece(individualPawns[i], twoPushBoard, pawns, c);
+      // If a pawn can move two squares, it could have moved one and is now 
+      // enpassat
+      newBoard.setPiece(onePushBoard, enPassat);
       newBoards.push_back(newBoard);
     }
     for (int j = 0; j < attackBoards.size(); j++) {
       newBoard = current;
-      newBoard.takePiece(individualPawns[i], attackBoards[i], pawns, color);
-      newBoard.setEnPassat(0, !color);
+      newBoard.takePiece(individualPawns[i], attackBoards[j], pawns, c);
+      newBoard.setPiece(0, enPassat);
       newBoards.push_back(newBoard);
     }
   }

@@ -25,7 +25,7 @@ uint64_t blackPawnPushTwo(uint64_t blackPawns, uint64_t empty);
 uint64_t whitePawnAttack(uint64_t whitePawns, uint64_t blackPieces);
 uint64_t blackPawnAttack(uint64_t blackPawns, uint64_t whitePieces);
 
-void generatePawnBoards(std::vector<Board> &newBoards, Board current, int turn);
+void generatePawnBoards(std::vector<Board> &newBoards, Board current, color c);
 
 uint64_t knightMove(uint64_t knights, uint64_t empty, uint64_t pieces);
 
@@ -37,6 +37,6 @@ uint64_t queenMove(uint64_t queen, uint64_t empty, uint64_t pieces);
 
 uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces);
 
-void generateMoves(std::vector<Board> &newBoards, Board current, int turn);
+void generateMoves(std::vector<Board> &newBoards, Board current, color c);
 
 #endif

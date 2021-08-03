@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
+#include <vector>
 
 #include "moveGen.h"
 #include "constants.h"
+#include "board.h"
 
 TEST(shiftTests, northSouthOut) {
   EXPECT_EQ(oneSouth(0x0000000000000001), 0);
@@ -126,4 +128,37 @@ TEST(rookTests, rookMove) {
   EXPECT_EQ(rookMove(0x0000000008000000, 0xFFFFFFFFFFFFFFFF, 0), 0x08080808f7080808);
   EXPECT_EQ(rookMove(0x0000000008000000, 0, 0xFFFFFFFFFFFFFFFF), 0x0000000814080000);
   EXPECT_EQ(rookMove(0x0000000042000000, 0x0000FFFFBDFF0000, 0xff02000000004000), 0x00024242bd424000);
+}
+
+TEST(generateTests, genPawnBoards) {
+  Board b, singlePush, doublePush, attackOne, attackTwo;
+  std::vector<Board> nextBoards;
+  b.clear();
+  b.setColor(0x0000000000002000, white);
+  b.setColor(0x0000000000500000, black);
+  b.setPiece(0x0000000000502000, pawns);
+  generatePawnBoards(nextBoards, b, white);
+  singlePush.clear();
+  singlePush.setColor(0x0000000000200000, white);
+  singlePush.setColor(0x0000000000500000, black);
+  singlePush.setPiece(0x0000000000700000, pawns);
+  doublePush.clear();
+  doublePush.setColor(0x0000000020000000, white);
+  doublePush.setColor(0x0000000000500000, black);
+  doublePush.setPiece(0x0000000020500000, pawns);
+  doublePush.setPiece(0x0000000000200000, enPassat);
+  attackOne.clear();
+  attackOne.setColor(0x0000000000400000, white);
+  attackOne.setColor(0x0000000000100000, black);
+  attackOne.setPiece(0x0000000000500000, pawns);
+  attackTwo.clear();
+  attackTwo.setColor(0x0000000000100000, white);
+  attackTwo.setColor(0x0000000000400000, black);
+  attackTwo.setPiece(0x0000000000500000, pawns);
+  std::vector<Board> expected = {singlePush, doublePush, attackTwo, attackOne};
+  ASSERT_EQ(nextBoards.size(), expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    EXPECT_EQ(nextBoards[i], expected[i]) << "Difference at index " << i;
+  }
+
 }

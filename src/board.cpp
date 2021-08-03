@@ -12,17 +12,47 @@ Board::Board() {
   m_pieces[bishops] = BISHOP_START;
   m_pieces[queens] = QUEEN_START;
   m_pieces[kings] = KING_START;
-  m_enPassat[white] = 0;
-  m_enPassat[black] = 0;
+  m_pieces[enPassat] = 0;
   m_hasCastled[white] = false;
   m_hasCastled[black] = false;
 }
 
-uint64_t Board::getAllPieces() { return m_colors[white] | m_colors[black]; }
-uint64_t Board::getEmptySquares() { return ~(m_colors[white] | m_colors[black]); }
-uint64_t Board::getBByPiece(piece p) { return m_pieces[p]; }
-uint64_t Board::getBByColor(color c) { return m_colors[c]; }
-uint64_t Board::getBByPieceAndColor(piece p, color c) { return m_pieces[p] & m_colors[c]; }
+bool Board::operator==(const Board& other) const {
+  return (m_colors[white] == other.m_colors[white]) &&
+         (m_colors[black] == other.m_colors[black]) &&
+         (m_pieces[pawns] == other.m_pieces[pawns]) &&
+         (m_pieces[knights] == other.m_pieces[knights]) &&
+         (m_pieces[rooks] == other.m_pieces[rooks]) &&
+         (m_pieces[bishops] == other.m_pieces[bishops]) &&
+         (m_pieces[queens] == other.m_pieces[queens]) &&
+         (m_pieces[kings] == other.m_pieces[kings]) &&
+         (m_pieces[enPassat] == other.m_pieces[enPassat]) &&
+         (m_hasCastled[white] == other.m_hasCastled[white]) &&
+         (m_hasCastled[black] == other.m_hasCastled[black]);
+}
+
+uint64_t Board::getAllPieces() const { return m_colors[white] | m_colors[black]; }
+uint64_t Board::getEmptySquares() const { return ~(m_colors[white] | m_colors[black]); }
+uint64_t Board::getBByPiece(piece p) const { return m_pieces[p]; }
+uint64_t Board::getBByColor(color c) const { return m_colors[c]; }
+uint64_t Board::getBByPieceAndColor(piece p, color c) const { return m_pieces[p] & m_colors[c]; }
+
+void Board::setColor(uint64_t b, color c) { m_colors[c] = b; }
+void Board::setPiece(uint64_t b, piece p) { m_pieces[p] = b; }
+void Board::setCastling(bool val, color c) { m_hasCastled[c] = val; }
+void Board::clear() {
+  m_colors[white] = 0;
+  m_colors[black] = 0;
+  m_pieces[pawns] = 0;
+  m_pieces[knights] = 0;
+  m_pieces[rooks] = 0;
+  m_pieces[bishops] = 0;
+  m_pieces[queens] = 0;
+  m_pieces[kings] = 0;
+  m_pieces[enPassat] = 0;
+  m_hasCastled[white] = false;
+  m_hasCastled[black] = false;
+}
 
 void Board::movePiece(uint64_t oldPos, uint64_t newPos, piece p, color c) {
   m_pieces[p] ^= oldPos;
@@ -38,7 +68,5 @@ void Board::takePiece(uint64_t oldPos, uint64_t newPos, piece p, color c) {
       m_pieces[i] ^= newPos;
     }
   }
-  movePiece(oldPos, newPos, p, c)
+  movePiece(oldPos, newPos, p, c);
 }
-
-void Board::setEnPassat(uint64_t b, color c) { m_enPassat[c] = b; }
