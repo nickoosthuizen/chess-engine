@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <functional>
 
 #include "board.h"
 
@@ -25,18 +26,15 @@ uint64_t blackPawnPushTwo(uint64_t blackPawns, uint64_t empty);
 uint64_t whitePawnAttack(uint64_t whitePawns, uint64_t blackPieces);
 uint64_t blackPawnAttack(uint64_t blackPawns, uint64_t whitePieces);
 
-void generatePawnBoards(std::vector<Board> &newBoards, Board current, color c);
-
 uint64_t knightMove(uint64_t knights, uint64_t empty, uint64_t pieces);
-
 uint64_t bishopMove(uint64_t bishops, uint64_t empty, uint64_t pieces);
-
 uint64_t rookMove(uint64_t rooks, uint64_t empty, uint64_t pieces);
-
 uint64_t queenMove(uint64_t queen, uint64_t empty, uint64_t pieces);
-
 uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces);
 
+void generatePawnBoards(std::vector<Board> &newBoards, Board current, color c);
+void generatePieceBoards(std::vector<Board> &newBoards, Board current, color c, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove);
+void generateCastleBoards(std::vector<Board> &newBoards, Board current, color c);
 void generateMoves(std::vector<Board> &newBoards, Board current, color c);
 
 #endif

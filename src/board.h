@@ -16,7 +16,8 @@ enum piece {
   queens,
   kings,
   // only one side can have an enPassat pawn at a time
-  enPassat
+  enPassat,
+  castlingRights
 };
 
 class Board {
@@ -33,7 +34,6 @@ class Board {
     // Testing functions
     void setColor(uint64_t b, color c);
     void setPiece(uint64_t b, piece p);
-    void setCastling(bool val, color c);
     void clear();
 
     void movePiece(uint64_t oldPos, uint64_t newPos, piece p, color c);
@@ -41,8 +41,7 @@ class Board {
 
   private:
     uint64_t m_colors[2];
-    uint64_t m_pieces[7];
-    bool m_hasCastled[2];
+    uint64_t m_pieces[8];
 };
 
 

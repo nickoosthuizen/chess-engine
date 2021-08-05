@@ -13,8 +13,7 @@ Board::Board() {
   m_pieces[queens] = QUEEN_START;
   m_pieces[kings] = KING_START;
   m_pieces[enPassat] = 0;
-  m_hasCastled[white] = false;
-  m_hasCastled[black] = false;
+  m_pieces[castlingRights] = KING_START | ROOK_START;
 }
 
 bool Board::operator==(const Board& other) const {
@@ -27,8 +26,7 @@ bool Board::operator==(const Board& other) const {
          (m_pieces[queens] == other.m_pieces[queens]) &&
          (m_pieces[kings] == other.m_pieces[kings]) &&
          (m_pieces[enPassat] == other.m_pieces[enPassat]) &&
-         (m_hasCastled[white] == other.m_hasCastled[white]) &&
-         (m_hasCastled[black] == other.m_hasCastled[black]);
+         (m_pieces[castlingRights] == m_pieces[castlingRights]);
 }
 
 uint64_t Board::getAllPieces() const { return m_colors[white] | m_colors[black]; }
@@ -39,7 +37,6 @@ uint64_t Board::getBByPieceAndColor(piece p, color c) const { return m_pieces[p]
 
 void Board::setColor(uint64_t b, color c) { m_colors[c] = b; }
 void Board::setPiece(uint64_t b, piece p) { m_pieces[p] = b; }
-void Board::setCastling(bool val, color c) { m_hasCastled[c] = val; }
 void Board::clear() {
   m_colors[white] = 0;
   m_colors[black] = 0;
@@ -50,8 +47,7 @@ void Board::clear() {
   m_pieces[queens] = 0;
   m_pieces[kings] = 0;
   m_pieces[enPassat] = 0;
-  m_hasCastled[white] = false;
-  m_hasCastled[black] = false;
+  m_pieces[castlingRights] = 0;
 }
 
 void Board::movePiece(uint64_t oldPos, uint64_t newPos, piece p, color c) {
