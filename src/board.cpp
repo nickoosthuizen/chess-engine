@@ -55,6 +55,7 @@ void Board::movePiece(uint64_t oldPos, uint64_t newPos, piece p, color c) {
   m_pieces[p] |= newPos;
   m_colors[c] ^= oldPos;
   m_colors[c] |= newPos;
+  if (m_pieces[enPassat]) m_pieces[enPassat] = 0;
 }
 
 void Board::takePiece(uint64_t oldPos, uint64_t newPos, piece p, color c) {
@@ -65,4 +66,16 @@ void Board::takePiece(uint64_t oldPos, uint64_t newPos, piece p, color c) {
     }
   }
   movePiece(oldPos, newPos, p, c);
+}
+
+void Board::takeEnPassat(uint64_t oldPos, uint64_t newPos, piece p, color c) {
+  uint64_t pawnPos = (c == white) ? m_pieces[enPassat] >> 8 : m_pieces[enPassat] << 8;
+  m_colors[!c] ^= pawnPos;
+  m_pieces[pawns] ^= pawnPos;
+  movePiece(oldPos, newPos, p, c);
+}
+
+void Board::promotePawn(uint64_t pos, piece newP) {
+  m_pieces[pawns] ^= pos;
+  m_pieces[newP] |= pos; 
 }

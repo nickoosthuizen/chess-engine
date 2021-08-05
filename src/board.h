@@ -38,6 +38,8 @@ class Board {
 
     void movePiece(uint64_t oldPos, uint64_t newPos, piece p, color c);
     void takePiece(uint64_t oldPos, uint64_t newPos, piece p, color c);
+    void takeEnPassat(uint64_t oldPos, uint64_t newPos, piece p, color c);
+    void promotePawn(uint64_t pos, piece newP);
 
   private:
     uint64_t m_colors[2];
