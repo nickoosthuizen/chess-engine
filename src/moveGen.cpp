@@ -179,12 +179,18 @@ void generatePawnBoards(std::vector<Board> &newBoards, Board current, color c) {
   return;
 }
 
+// Note: has extra logic for handling castling rights, see about removing it
 void generatePieceBoards(std::vector<Board> &newBoards, Board current, color c, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove) {
   std::vector<uint64_t> individualPieces, moves;
   uint64_t moveBoard;
   Board newBoard;
 
   color opponent = (c == white) ? black : white;
+
+  // moving the king removes the right to castle
+  if (p == kings && current.getBByPieceAndColor(castlingRights, c)) {
+    current.setPiece(current.getBByPieceAndColor(castlingRights, opponent), castlingRights);
+  }
 
   isolateBits(individualPieces, current.getBByPieceAndColor(p, c));
   for (int i = 0; i < individualPieces.size(); i++) {
@@ -199,6 +205,10 @@ void generatePieceBoards(std::vector<Board> &newBoards, Board current, color c, 
         newBoard.takePiece(individualPieces[i], moves[j], p, c);
       }
       newBoard.setPiece(0, enPassat);
+      // remove a moved rook from the castling rights
+      if (p == rooks && (current.getBByPieceAndColor(castlingRights, c) & individualPieces[i])) {
+        newBoard.setPiece(current.getBByPiece(castlingRights) ^ individualPieces[i], castlingRights);
+      }
       newBoards.push_back(newBoard);
     }
   }
@@ -207,22 +217,19 @@ void generatePieceBoards(std::vector<Board> &newBoards, Board current, color c, 
 
 void generateCastleBoards(std::vector<Board> &newBoards, Board current, color c) {
   Board newBoard;
-  uint64_t newCastlingRights;
   if (c == white) {
     if ((current.getBByPieceAndColor(castlingRights, white) & FILE_A) && !(current.getBByColor(white) & W_LEFT_BTWN_K_AND_R)) {
       newBoard = current;
       newBoard.movePiece(W_KING_START, W_LEFT_KING_CASTLE, kings, white);
       newBoard.movePiece(W_LEFT_ROOK_START, W_LEFT_ROOK_CASTLE, rooks, white);
-      newCastlingRights = current.getBByPiece(castlingRights) & 0xFF00000000000000;
-      newBoard.setPiece(newCastlingRights, castlingRights);
+      newBoard.setPiece(current.getBByPieceAndColor(castlingRights, black), castlingRights);
       newBoards.push_back(newBoard);
     }
     if ((current.getBByPieceAndColor(castlingRights, white) & FILE_H) && !(current.getBByColor(white) & W_RIGHT_BTWN_K_AND_R)) {
       newBoard = current;
       newBoard.movePiece(W_KING_START, W_RIGHT_KING_CASTLE, kings, white);
       newBoard.movePiece(W_RIGHT_ROOK_START, W_RIGHT_ROOK_CASTLE, rooks, white);
-      newCastlingRights = current.getBByPiece(castlingRights) & 0xFF00000000000000;
-      newBoard.setPiece(newCastlingRights, castlingRights);
+      newBoard.setPiece(current.getBByPieceAndColor(castlingRights, black), castlingRights);
       newBoards.push_back(newBoard);
     }
   }
@@ -231,16 +238,14 @@ void generateCastleBoards(std::vector<Board> &newBoards, Board current, color c)
       newBoard = current;
       newBoard.movePiece(B_KING_START, B_LEFT_KING_CASTLE, kings, black);
       newBoard.movePiece(B_LEFT_ROOK_START, B_LEFT_ROOK_CASTLE, rooks, black);
-      newCastlingRights = current.getBByPiece(castlingRights) & 0x00000000000000FF;
-      newBoard.setPiece(newCastlingRights, castlingRights);
+      newBoard.setPiece(current.getBByPieceAndColor(castlingRights, white), castlingRights);
       newBoards.push_back(newBoard);
     }
     if ((current.getBByPieceAndColor(castlingRights, black) & FILE_H) && !(current.getBByColor(black) & B_RIGHT_BTWN_K_AND_R)) {
       newBoard = current;
       newBoard.movePiece(B_KING_START, B_RIGHT_KING_CASTLE, kings, black);
       newBoard.movePiece(B_RIGHT_ROOK_START, B_RIGHT_ROOK_CASTLE, rooks, black);
-      newCastlingRights = current.getBByPiece(castlingRights) & 0x00000000000000FF;
-      newBoard.setPiece(newCastlingRights, castlingRights);
+      newBoard.setPiece(current.getBByPieceAndColor(castlingRights, white), castlingRights);
       newBoards.push_back(newBoard);
     }
   }
@@ -258,6 +263,7 @@ void generateMoves(std::vector<Board> &newBoards, Board current, color c) {
     generatePieceBoards(newBoards, current, c, knights, knightMove);
   }
   if (current.getBByPieceAndColor(rooks, c) != 0) {
+
     generatePieceBoards(newBoards, current, c, rooks, rookMove);
   }
   if (current.getBByPieceAndColor(bishops, c) != 0) {
