@@ -137,7 +137,7 @@ TEST(generateTests, genPawnBoards) {
   b.setColor(0x0000000000002000, white);
   b.setColor(0x0000000000500000, black);
   b.setPiece(0x0000000000502000, pawns);
-  generatePawnBoards(nextBoards, b, white);
+  generatePawnBoards(nextBoards, b);
   singlePush.clear();
   singlePush.setColor(0x0000000000200000, white);
   singlePush.setColor(0x0000000000500000, black);

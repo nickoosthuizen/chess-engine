@@ -34,10 +34,10 @@ uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces);
 
 bool isInCheck(Board b, color c);
 
-void generatePawnBoards(std::vector<Board> &newBoards, Board current, color c);
-void generatePieceBoards(std::vector<Board> &newBoards, Board current, color c, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove);
-void generateCastleBoards(std::vector<Board> &newBoards, Board current, color c);
-void generatePromotionBoards(std::vector<Board> &newBoards, Board current, color c);
-void generateMoves(std::vector<Board> &newBoards, Board current, color c);
+void generatePawnBoards(std::vector<Board> &newBoards, Board current);
+void generatePieceBoards(std::vector<Board> &newBoards, Board current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove);
+void generateCastleBoards(std::vector<Board> &newBoards, Board current);
+void generatePromotionBoards(std::vector<Board> &newBoards, Board current);
+void generateMoves(std::vector<Board> &newBoards, Board current);
 
 #endif
