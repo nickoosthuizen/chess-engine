@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <cstdint>
+#include <string>
 
 enum color {
   white,

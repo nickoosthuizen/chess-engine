@@ -3,7 +3,7 @@
 
 #include "board.h"
 #include "constants.h"
-#include "util.h"
+#include "utilFunctions.h"
 #include <string>
 
 Board::Board() {
@@ -44,7 +44,7 @@ Board::Board(std::string fen) {
   if (rows.size() != 8) return;
 
   int n = 63;
-  for (int i = 0; i < rows.size(); i++) {
+  for (int i = 0; i < rows.size(); ++i) {
     for (int j = 0; j < rows[i].size(); j++) {
       if (isupper(rows[i][j])) {
         m_colors[white] |= (1 << n);
@@ -88,7 +88,7 @@ Board::Board(std::string fen) {
 
   fields[1] == "w" ? m_turn = white : m_turn = black;
 
-  for (int i = 0; i < fields[2].length(); i++) {
+  for (int i = 0; i < fields[2].length(); ++i) {
     if (fields[2][i] == '-') {
       break;
     }
@@ -113,8 +113,8 @@ Board::Board(std::string fen) {
   else m_pieces[enPassat] = squareToBit(fields[3]);
 
 
-  (fields[4].isdigit()) ? m_halfClock = std::stoi(fields[4], nullptr) : m_halfClock = 0;
-  (fields[5].isdigit()) ? m_fullCounter = std::stoi(fields[5], nullptr) : m_fullCounter = 1;
+  (isWholeNumber(fields[4])) ? m_halfClock = std::stoi(fields[4], nullptr) : m_halfClock = 0;
+  (isWholeNumber(fields[5])) ? m_fullCounter = std::stoi(fields[5], nullptr) : m_fullCounter = 1;
 } 
 
 bool Board::operator==(const Board& other) const {
@@ -169,12 +169,12 @@ void Board::movePiece(uint64_t oldPos, uint64_t newPos, piece p) {
   if (m_pieces[enPassat]) m_pieces[enPassat] = 0;
   if (m_turn == black) m_fullCounter++;
   (p == pawns) ? m_halfClock = 0 : m_halfClock++;
-  m_turn = !m_turn;
+  m_turn == white ? m_turn = black : m_turn = white;
 }
 
 void Board::takePiece(uint64_t oldPos, uint64_t newPos, piece p) {
   m_colors[!m_turn] ^= newPos;
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 6; ++i) {
     if (newPos & m_pieces[i]) {
       m_pieces[i] ^= newPos;
     }
@@ -219,5 +219,5 @@ void Board::castle(bool kq) {
   if (m_turn == black) m_fullCounter++;
   m_halfClock++;
   m_pieces[castlingRights] = m_pieces[castlingRights] & m_colors[!m_turn];
-  m_turn = !m_turn;
+  m_turn == white ? m_turn = black : m_turn = white;
 }

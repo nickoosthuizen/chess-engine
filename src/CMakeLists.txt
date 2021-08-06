@@ -6,6 +6,7 @@ set(SOURCES
   main.cpp
   board.cpp
   moveGen.cpp
+  utilFunctions.cpp
 )
 
 add_executable(${BINARY} ${SOURCES})

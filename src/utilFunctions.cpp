@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 
-#include "util.h"
+#include "utilFunctions.h"
 #include "constants.h"
 
 void split(std::string toSplit, std::string delimiter, std::vector<std::string> &splitStrings) {
@@ -100,4 +100,10 @@ std::string bitToSquare(uint64_t bit) {
   else if (bit & RANK_8) square += "8";
 
   return square;
+}
+
+bool isWholeNumber(const std:: string& s) {
+  std::string::const_iterator it = s.begin();
+  while (it != s.end() && std::isdigit(*it)) it++;
+  return !s.empty() && it == s.end();
 }

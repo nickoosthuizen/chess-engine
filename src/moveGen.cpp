@@ -135,7 +135,8 @@ uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces) {
            (empty | pieces);
 }
 
-bool isInCheck(Board b, color c) {
+bool isInCheck(Board b) {
+  color c = b.getTurn();
   uint64_t kingB = b.getBByPieceAndColor(kings, c);
   uint64_t ownB = b.getBByColor(c);
   uint64_t empty = b.getEmptySquares();
@@ -154,14 +155,14 @@ bool isInCheck(Board b, color c) {
   return false;  
 }
 
-void generatePawnBoards(std::vector<Board> &newBoards, Board current, color c) {
+void generatePawnBoards(std::vector<Board> &newBoards, Board current) {
   std::vector<uint64_t> individualPawns, attackBoards;
   uint64_t onePushBoard, twoPushBoard;
   Board newBoard;
 
-  isolateBits(individualPawns, current.getBByPieceAndColor(pawns, c));
+  isolateBits(individualPawns, current.getBByPieceAndColor(pawns, current.getTurn()));
 
-  for (int i = 0; i < individualPawns.size(); i++) {
+  for (int i = 0; i < individualPawns.size(); ++i) {
     attackBoards.clear();
     if (current.getTurn() == white) {
       onePushBoard = whitePawnPush(individualPawns[i], current.getEmptySquares());
@@ -177,7 +178,7 @@ void generatePawnBoards(std::vector<Board> &newBoards, Board current, color c) {
       newBoard = current;
       newBoard.movePiece(individualPawns[i], onePushBoard, pawns);
       if (onePushBoard & RANK_1 || onePushBoard & RANK_8) {
-        generatePromotionBoards(newBoards, newBoard, c);
+        generatePromotionBoards(newBoards, newBoard);
       }
       else {
         newBoards.push_back(newBoard);
@@ -226,7 +227,7 @@ void generatePieceBoards(std::vector<Board> &newBoards, Board current, piece p, 
 
   isolateBits(individualPieces, current.getBByPieceAndColor(p, c));
 
-  for (int i = 0; i < individualPieces.size(); i++) {
+  for (int i = 0; i < individualPieces.size(); ++i) {
     moveBoard = pieceMove(individualPieces[i], current.getEmptySquares(), current.getBByColor(opponent) | current.getBByPiece(enPassat));
     isolateBits(moves, moveBoard);
     baseBoard = current;
@@ -267,7 +268,8 @@ void generateCastleBoards(std::vector<Board> &newBoards, Board current) {
   return;
 }
 
-void generatePromotionBoards(std::vector<Board> &newBoards, Board current, color c) {
+void generatePromotionBoards(std::vector<Board> &newBoards, Board current) {
+  color c = current.getTurn();
   uint64_t pawnB = current.getBByPieceAndColor(pawns, c);
   pawnB = (c == white) ? pawnB & FILE_H : pawnB & FILE_A;
   if (!pawnB) return;
@@ -313,8 +315,8 @@ void generateMoves(std::vector<Board> &newBoards, Board current) {
   if (current.getBByPieceAndColor(castlingRights, c) != 0) {
     generateCastleBoards(potentialBoards, current);
   }
-  for (int i = 0; i < potentialBoards.size(); i++) {
-    if (!isInCheck(potentialBoards[i], c)) {
+  for (int i = 0; i < potentialBoards.size(); ++i) {
+    if (!isInCheck(potentialBoards[i])) {
       newBoards.push_back(potentialBoards[i]);
     }
   }
