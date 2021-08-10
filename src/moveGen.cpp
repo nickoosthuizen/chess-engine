@@ -135,24 +135,23 @@ uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces) {
            (empty | pieces);
 }
 
-bool isInCheck(Board b) {
+bool areSquaresAttacked(Board b, uint64_t attacked) {
   color c = b.getTurn();
-  uint64_t kingB = b.getBByPieceAndColor(kings, c);
   uint64_t ownB = b.getBByColor(c);
   uint64_t empty = b.getEmptySquares();
   color opponent = (c == white) ? black : white;
   if (c == white) {
-    if (blackPawnAttack(b.getBByPieceAndColor(pawns, black), ownB) & kingB) return true;
+    if (blackPawnAttack(b.getBByPieceAndColor(pawns, opponent), attacked) & attacked) return true;
   }
   else {
-    if (blackPawnAttack(b.getBByPieceAndColor(pawns, white), ownB) & kingB) return true;
+    if (whitePawnAttack(b.getBByPieceAndColor(pawns, opponent), attacked) & attacked) return true;
   }
-  if (knightMove(b.getBByPieceAndColor(knights, opponent), empty, ownB) & kingB) return true;
-  if (bishopMove(b.getBByPieceAndColor(bishops, opponent), empty, ownB) & kingB) return true;
-  if (rookMove(b.getBByPieceAndColor(rooks, opponent), empty, ownB) & kingB) return true;
-  if (queenMove(b.getBByPieceAndColor(queens, opponent), empty, ownB), & kingB) return true;
-  if (kingMove(b.getBByPieceAndColor(kings, opponent), empty, ownB) & kingB) return true;
-  return false;  
+  if (knightMove(b.getBByPieceAndColor(knights, opponent), empty, ownB) & attacked) return true;
+  if (bishopMove(b.getBByPieceAndColor(bishops, opponent), empty, ownB) & attacked) return true;
+  if (rookMove(b.getBByPieceAndColor(rooks, opponent), empty, ownB) & attacked) return true;
+  if (queenMove(b.getBByPieceAndColor(queens, opponent), empty, ownB) & attacked) return true;
+  if (kingMove(b.getBByPieceAndColor(kings, opponent), empty, ownB) & attacked) return true;
+  return false;
 }
 
 void generatePawnBoards(std::vector<Board> &newBoards, Board current) {
@@ -257,11 +256,16 @@ void generatePieceBoards(std::vector<Board> &newBoards, Board current, piece p, 
 void generateCastleBoards(std::vector<Board> &newBoards, Board current) {
   Board newBoard;
   color c = current.getTurn();
-  if ((current.getBByPieceAndColor(castlingRights, c) & FILE_A) && (current.getEmptySquares() & Q_SIDE_BTWN_K_AND_R)) {
+  uint64_t rank = (c == white) ? RANK_1 : RANK_8;
+  if ((current.getBByPieceAndColor(castlingRights, c) & FILE_A) 
+        && !(current.getAllPieces() & (Q_SIDE_BTWN_K_AND_R & rank))
+        && !(areSquaresAttacked(current, Q_SIDE_VULN_SQUARES & rank))) {
     newBoard = current;
     newBoard.castle(false);
   }
-  if ((current.getBByPieceAndColor(castlingRights, c) & FILE_H) && (current.getEmptySquares() & K_SIDE_BTWN_K_AND_R)) {
+  if ((current.getBByPieceAndColor(castlingRights, c) & FILE_H) 
+        && !(current.getAllPieces() & (K_SIDE_BTWN_K_AND_R & rank))
+        && !(areSquaresAttacked(current, K_SIDE_VULN_SQUARES & rank))) {
     newBoard = current;
     newBoard.castle(true);
   }
@@ -315,8 +319,10 @@ void generateMoves(std::vector<Board> &newBoards, Board current) {
   if (current.getBByPieceAndColor(castlingRights, c) != 0) {
     generateCastleBoards(potentialBoards, current);
   }
+  uint64_t k;
   for (int i = 0; i < potentialBoards.size(); ++i) {
-    if (!isInCheck(potentialBoards[i])) {
+    k = potentialBoards[i].getBByPieceAndColor(kings, c);
+    if (!(areSquaresAttacked(potentialBoards[i], k))) {
       newBoards.push_back(potentialBoards[i]);
     }
   }

@@ -32,7 +32,7 @@ uint64_t rookMove(uint64_t rooks, uint64_t empty, uint64_t pieces);
 uint64_t queenMove(uint64_t queen, uint64_t empty, uint64_t pieces);
 uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces);
 
-bool isInCheck(Board b, color c);
+bool areSquaresAttacked(Board b, uint64_t attacked);
 
 void generatePawnBoards(std::vector<Board> &newBoards, Board current);
 void generatePieceBoards(std::vector<Board> &newBoards, Board current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove);
