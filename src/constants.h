@@ -46,4 +46,7 @@ const uint64_t RANK_6 = 0x0000FF0000000000;
 const uint64_t RANK_7 = 0x00FF000000000000;
 const uint64_t RANK_8 = 0xFF00000000000000;
 
+// Move Type codes
+const unsigned char regular = 0x00;
+
 #endif

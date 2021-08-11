@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <bitset>
 
 #include "utilFunctions.h"
 #include "constants.h"
@@ -106,4 +107,9 @@ bool isWholeNumber(const std:: string& s) {
   std::string::const_iterator it = s.begin();
   while (it != s.end() && std::isdigit(*it)) it++;
   return !s.empty() && it == s.end();
+}
+
+int populationCount(uint64_t n) {
+  std::bitset<64> num (n);
+  return num.count();
 }

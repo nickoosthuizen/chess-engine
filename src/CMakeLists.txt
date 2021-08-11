@@ -7,6 +7,7 @@ set(SOURCES
   board.cpp
   moveGen.cpp
   utilFunctions.cpp
+  perft.cpp
 )
 
 add_executable(${BINARY} ${SOURCES})
