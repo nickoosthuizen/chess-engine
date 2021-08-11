@@ -46,7 +46,20 @@ const uint64_t RANK_6 = 0x0000FF0000000000;
 const uint64_t RANK_7 = 0x00FF000000000000;
 const uint64_t RANK_8 = 0xFF00000000000000;
 
-// Move Type codes
-const unsigned char regular = 0x00;
+// Move Type flags
+const uint16_t REGULAR = 0x00;
+const uint16_t DOUBLE_PAWN = 0x01;
+const uint16_t K_CASTLE = 0x02;
+const uint16_t Q_CASTLE = 0x03;
+const uint16_t CAPTURE = 0x04;
+const uint16_t EP_CAPTURE = 0x05;
+const uint16_t KN_PRMT = 0x06;
+const uint16_t B_PRMT = 0x07;
+const uint16_t R_PRMT = 0x08;
+const uint16_t Q_PRMT = 0x09;
+const uint16_t KN_PRMT_CAPT = 0x0A;
+const uint16_t B_PRMT_CAPT = 0x0B;
+const uint16_t R_PRMT_CAPT = 0x0C;
+const uint16_t Q_PRMT_CAPT = 0x0D;
 
 #endif

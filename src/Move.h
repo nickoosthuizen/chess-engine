@@ -3,9 +3,13 @@
 
 #include <stdint.h>
 
-class Move() {
+class Move {
   public:
-    Move();
+    Move(uint16_t from, uint16_t to, uint16_t flag);
+    uint16_t getFrom();
+    uint16_t getTo();
+    uint16_t getFlag();
+
   private:
     uint16_t m_move;
 };
