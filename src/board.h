@@ -39,13 +39,9 @@ class Board {
     color getTurn() const;
     unsigned short getHalfClock() const;
     unsigned short getFullCounter() const;
-    
-    void setColor(uint64_t b, color c);
-    void setPiece(uint64_t b, piece p);
-    void clear();
 
     int makeMove(Move m);
-    int unMakeMove(Move m);
+    void unMakeMove();
 
   private:
     piece getPieceAt(uint64_t pos);
@@ -54,15 +50,26 @@ class Board {
     void takeEnPassat(uint64_t from, uint64_t to, piece p);
     void promotePawn(uint64_t pos, piece newP);
     // false = kingside, q = queenside
-    void castle(bool kq);
+    void castle(bool qSide);
+
+    void undoCapture(uint64_t pos, piece captured, color c);
+    void undoCastle(bool qSide);
+    void demotePawn(uint64_t prevFrom, uint64_t prevTo, piece newP);
 
     uint64_t m_colors[2];
     uint64_t m_pieces[8];
-    // 0 or false = white, 1 or true = black
+
     color m_turn;
     unsigned short m_halfClock;
     unsigned short m_fullCounter;
-    Move prevMove;
+    
+    // values for unmake move
+    Move m_prevMove;
+    uint64_t m_prevEnPassat;
+    uint64_t m_prevCastlingRights;
+    piece m_prevCapturedPiece;
+    unsigned short m_prevHalfClock;
+
 };
 
 
