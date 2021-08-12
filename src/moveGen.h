@@ -6,6 +6,7 @@
 #include <functional>
 
 #include "board.h"
+#include "Move.h"
 
 uint64_t oneNorth(uint64_t b);
 uint64_t oneSouth(uint64_t b);
@@ -32,12 +33,11 @@ uint64_t rookMove(uint64_t rooks, uint64_t empty, uint64_t pieces);
 uint64_t queenMove(uint64_t queen, uint64_t empty, uint64_t pieces);
 uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces);
 
-bool areSquaresAttacked(Board b, uint64_t attacked);
+bool areSquaresAttacked(const Board& b, uint64_t attacked);
 
-void generatePawnBoards(std::vector<Board> &newBoards, Board current);
-void generatePieceBoards(std::vector<Board> &newBoards, Board current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove);
-void generateCastleBoards(std::vector<Board> &newBoards, Board current);
-void generatePromotionBoards(std::vector<Board> &newBoards, Board current);
-void generateMoves(std::vector<Board> &newBoards, Board current);
+void generatePawnBoards(std::vector<Move>& newMoves, const Board& current);
+void generatePieceBoards(std::vector<Move>& newMoves, const Board& current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove);
+void generateCastleBoards(std::vector<Move>& newMoves, const Board& current);
+void generateMoves(std::vector<Move>& newMoves, const Board& current);
 
 #endif

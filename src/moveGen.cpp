@@ -4,6 +4,7 @@
 #include "moveGen.h"
 #include "board.h"
 #include "constants.h"
+#include "utilFunctions.h"
 
 uint64_t oneNorth(uint64_t b) { return b << 8; }
 uint64_t oneSouth(uint64_t b) { return b >> 8; }
@@ -135,7 +136,7 @@ uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces) {
            (empty | pieces);
 }
 
-bool areSquaresAttacked(Board b, uint64_t attacked) {
+bool areSquaresAttacked(const Board& b, uint64_t attacked) {
   color c = b.getTurn();
   uint64_t ownB = b.getBByColor(c);
   uint64_t empty = b.getEmptySquares();
@@ -154,14 +155,15 @@ bool areSquaresAttacked(Board b, uint64_t attacked) {
   return false;
 }
 
-void generatePawnBoards(std::vector<Board> &newBoards, Board current) {
+void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
   std::vector<uint64_t> individualPawns, attackBoards;
   uint64_t onePushBoard, twoPushBoard;
-  Board newBoard;
+  uint16_t from, to;
 
   isolateBits(individualPawns, current.getBByPieceAndColor(pawns, current.getTurn()));
 
   for (int i = 0; i < individualPawns.size(); ++i) {
+    from = bitBoardToPos(individualPawns[i]);
     attackBoards.clear();
     if (current.getTurn() == white) {
       onePushBoard = whitePawnPush(individualPawns[i], current.getEmptySquares());
@@ -174,36 +176,35 @@ void generatePawnBoards(std::vector<Board> &newBoards, Board current) {
       isolateBits(attackBoards, whitePawnAttack(individualPawns[i], current.getBByColor(white) | current.getBByPiece(enPassat)));
     }
     if (onePushBoard) {
-      newBoard = current;
-      newBoard.movePiece(individualPawns[i], onePushBoard, pawns);
+      to = bitBoardToPos(onePushBoard);
       if (onePushBoard & RANK_1 || onePushBoard & RANK_8) {
-        generatePromotionBoards(newBoards, newBoard);
+        newMoves.push_back(Move(from, to, KN_PRMT));
+        newMoves.push_back(Move(from, to, B_PRMT));
+        newMoves.push_back(Move(from, to, R_PRMT));
+        newMoves.push_back(Move(from, to, Q_PRMT));
       }
       else {
-        newBoards.push_back(newBoard);
+        newMoves.push_back(Move(from, to, REGULAR));
       }
     }
     if (twoPushBoard) {
-      newBoard = current;
-      newBoard.movePiece(individualPawns[i], twoPushBoard, pawns);
-      // If a pawn can move two squares, it could have moved one and is now 
-      // enpassat
-      newBoard.setPiece(onePushBoard, enPassat);
-      newBoards.push_back(newBoard);
+      to = bitBoardToPos(twoPushBoard);
+      newMoves.push_back(Move(from, to, DOUBLE_PAWN));
     }
     for (int j = 0; j < attackBoards.size(); j++) {
-      newBoard = current;
+      to = bitBoardToPos(attackBoards[j]);
       if (attackBoards[i] & current.getBByPiece(enPassat)) {
-        newBoard.takeEnPassat(individualPawns[i], attackBoards[j], pawns);
+        // newBoard.takeEnPassat(individualPawns[i], attackBoards[j], pawns);
+        newMoves.push_back(Move(from, to, EP_CAPTURE));
+      }
+      else if (attackBoards[i] & RANK_1 || attackBoards[i] & RANK_8) {
+        newMoves.push_back(Move(from, to, KN_PRMT_CAPT));
+        newMoves.push_back(Move(from, to, B_PRMT_CAPT));
+        newMoves.push_back(Move(from, to, R_PRMT_CAPT));
+        newMoves.push_back(Move(from, to, Q_PRMT_CAPT));
       }
       else {
-        newBoard.takePiece(individualPawns[i], attackBoards[j], pawns);
-      }
-      if (attackBoards[i] & RANK_1 || attackBoards[i] & RANK_8) {
-        generatePromotionBoards(newBoards, newBoard);
-      }
-      else {
-        newBoards.push_back(newBoard);
+        newMoves.push_back(Move(from, to, CAPTURE));
       }
     }
   }
@@ -211,119 +212,78 @@ void generatePawnBoards(std::vector<Board> &newBoards, Board current) {
 }
 
 // Note: has extra logic for handling castling rights, see about removing it
-void generatePieceBoards(std::vector<Board> &newBoards, Board current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove) {
+void generatePieceBoards(std::vector<Move>& newMoves, const Board& current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove) {
   std::vector<uint64_t> individualPieces, moves;
   uint64_t moveBoard;
-  Board newBoard, baseBoard;
+  uint16_t from, to;
   color c = current.getTurn();
-
   color opponent = (c == white) ? black : white;
-
-  // moving the king removes the right to castle
-  if (p == kings && current.getBByPieceAndColor(castlingRights, c)) {
-    current.setPiece(current.getBByPieceAndColor(castlingRights, opponent), castlingRights);
-  }
 
   isolateBits(individualPieces, current.getBByPieceAndColor(p, c));
 
   for (int i = 0; i < individualPieces.size(); ++i) {
     moveBoard = pieceMove(individualPieces[i], current.getEmptySquares(), current.getBByColor(opponent) | current.getBByPiece(enPassat));
     isolateBits(moves, moveBoard);
-    baseBoard = current;
-
-    // remove a moved rook from the castling rights
-    if (p == rooks && (current.getBByPieceAndColor(castlingRights, c) & individualPieces[i])) {
-      baseBoard.setPiece(current.getBByPiece(castlingRights) ^ individualPieces[i], castlingRights);
-    }
+    
+    from = bitBoardToPos(individualPieces[i]);
 
     for (int j = 0; j < moves.size(); j++) {
-      newBoard = baseBoard;
-      if (moves[j] & baseBoard.getEmptySquares()) {
-        newBoard.movePiece(individualPieces[i], moves[j], p);
+      to = bitBoardToPos(moves[j]);
+      if (moves[j] & current.getEmptySquares()) {
+        newMoves.push_back(Move(from, to, REGULAR));
       }
-      else if (moves[j] & baseBoard.getBByPiece(enPassat)) {
-        newBoard.takeEnPassat(individualPieces[i], moves[j], p);
+      else if (moves[j] & current.getBByPiece(enPassat)) {
+        newMoves.push_back(Move(from, to, EP_CAPTURE));
       }
       else {
-        newBoard.takePiece(individualPieces[i], moves[j], p);
+        newMoves.push_back(Move(from, to, CAPTURE));
       }
-      newBoards.push_back(newBoard);
     }
   }
   return;
 }
 
-void generateCastleBoards(std::vector<Board> &newBoards, Board current) {
+void generateCastleBoards(std::vector<Move>& newMoves, const Board &current) {
   Board newBoard;
   color c = current.getTurn();
   uint64_t rank = (c == white) ? RANK_1 : RANK_8;
   if ((current.getBByPieceAndColor(castlingRights, c) & FILE_A) 
         && !(current.getAllPieces() & (Q_SIDE_BTWN_K_AND_R & rank))
         && !(areSquaresAttacked(current, Q_SIDE_VULN_SQUARES & rank))) {
-    newBoard = current;
-    newBoard.castle(false);
+    newMoves.push_back(Move(0, 0, Q_CASTLE));
   }
   if ((current.getBByPieceAndColor(castlingRights, c) & FILE_H) 
         && !(current.getAllPieces() & (K_SIDE_BTWN_K_AND_R & rank))
         && !(areSquaresAttacked(current, K_SIDE_VULN_SQUARES & rank))) {
-    newBoard = current;
-    newBoard.castle(true);
+    newMoves.push_back(Move(0, 0, K_CASTLE));
   }
   return;
 }
 
-void generatePromotionBoards(std::vector<Board> &newBoards, Board current) {
+void generateMoves(std::vector<Move>& newMoves, const Board &current) {
   color c = current.getTurn();
-  uint64_t pawnB = current.getBByPieceAndColor(pawns, c);
-  pawnB = (c == white) ? pawnB & FILE_H : pawnB & FILE_A;
-  if (!pawnB) return;
-  Board newBoard = current;
-  newBoard.promotePawn(pawnB, knights);
-  newBoards.push_back(newBoard);
-  newBoard = current;
-  newBoard.promotePawn(pawnB, bishops);
-  newBoards.push_back(newBoard);
-  newBoard = current;
-  newBoard.promotePawn(pawnB, rooks);
-  newBoards.push_back(newBoard);
-  newBoard = current;
-  newBoard.promotePawn(pawnB, queens);
-  newBoards.push_back(newBoard);
-}
-
-void generateMoves(std::vector<Board> &newBoards, Board current) {
-  std::vector<Board> potentialBoards;
-  color c = current.getTurn();
-  if (0 < newBoards.size()) {
-    newBoards.clear();
+  if (0 < newMoves.size()) {
+    newMoves.clear();
   }
   if (current.getBByPieceAndColor(pawns, c) != 0) {
-    generatePawnBoards(potentialBoards, current);
+    generatePawnBoards(newMoves, current);
   }
   if (current.getBByPieceAndColor(knights, c) != 0) {
-    generatePieceBoards(potentialBoards, current, knights, knightMove);
+    generatePieceBoards(newMoves, current, knights, knightMove);
   }
   if (current.getBByPieceAndColor(rooks, c) != 0) {
-
-    generatePieceBoards(potentialBoards, current, rooks, rookMove);
+    generatePieceBoards(newMoves, current, rooks, rookMove);
   }
   if (current.getBByPieceAndColor(bishops, c) != 0) {
-    generatePieceBoards(potentialBoards, current, bishops, bishopMove);
+    generatePieceBoards(newMoves, current, bishops, bishopMove);
   }
   if (current.getBByPieceAndColor(queens, c) != 0) {
-    generatePieceBoards(potentialBoards, current, queens, queenMove);
+    generatePieceBoards(newMoves, current, queens, queenMove);
   }
   if (current.getBByPieceAndColor(kings, c) != 0) {
-    generatePieceBoards(potentialBoards, current, kings, kingMove);
+    generatePieceBoards(newMoves, current, kings, kingMove);
   }
   if (current.getBByPieceAndColor(castlingRights, c) != 0) {
-    generateCastleBoards(potentialBoards, current);
-  }
-  uint64_t k;
-  for (int i = 0; i < potentialBoards.size(); ++i) {
-    k = potentialBoards[i].getBByPieceAndColor(kings, c);
-    if (!(areSquaresAttacked(potentialBoards[i], k))) {
-      newBoards.push_back(potentialBoards[i]);
-    }
+    generateCastleBoards(newMoves, current);
   }
 }

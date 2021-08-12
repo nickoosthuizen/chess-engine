@@ -135,7 +135,7 @@ uint64_t Board::getEmptySquares() const { return ~(m_colors[white] | m_colors[bl
 uint64_t Board::getBByPiece(piece p) const { return m_pieces[p]; }
 uint64_t Board::getBByColor(color c) const { return m_colors[c]; }
 uint64_t Board::getBByPieceAndColor(piece p, color c) const { return m_pieces[p] & m_colors[c]; }
-color Board::getTurn() { return m_turn; }
+color Board::getTurn() const { return m_turn; }
 unsigned short Board::getHalfClock() const { return m_halfClock; }
 unsigned short Board::getFullCounter() const { return m_fullCounter; }
 
@@ -154,40 +154,107 @@ void Board::clear() {
   m_pieces[castlingRights] = 0;
 }
 
+int Board::makeMove(Move m) {
+  uint16_t flag = m.getFlag();
+  uint16_t from = m.getFrom();
+  uint16_t to = m.getTo();
+  uint64_t fromBoard = posToBitBoard(from);
+  uint64_t toBoard = posToBitBoard(to);
+  piece p = getPieceAt(fromBoard);
+
+  if (p == notAPiece && flag != K_CASTLE && flag != Q_CASTLE) return -1;
+
+  switch(flag) {
+    case REGULAR:
+      movePiece(fromBoard, toBoard, p);
+      break;
+    case DOUBLE_PAWN:
+      movePiece(fromBoard, toBoard, p);
+      m_turn == white ? m_pieces[enPassat] = fromBoard >> 8 : m_pieces[enPassat] = fromBoard << 8;
+      break;
+    case K_CASTLE:
+      castle(false);
+      break;
+    case Q_CASTLE:
+      castle(true);
+      break;
+    case CAPTURE:
+      takePiece(fromBoard, toBoard, p);
+      break;
+    case EP_CAPTURE:
+      takeEnPassat(fromBoard, toBoard, p);
+      break;
+    case KN_PRMT:
+      promotePawn(fromBoard, knights);
+      break;
+    case B_PRMT:
+      promotePawn(fromBoard, bishops);
+      break;
+    case R_PRMT:
+      promotePawn(fromBoard, rooks);
+      break;
+    case Q_PRMT:
+      promotePawn(fromBoard, queens);
+      break;
+    case KN_PRMT_CAPT:
+      takePiece(fromBoard, toBoard, p);
+      promotePawn(fromBoard, knights);
+      break;
+    case B_PRMT_CAPT:
+      takePiece(fromBoard, toBoard, p);
+      promotePawn(fromBoard, bishops);
+      break;
+    case R_PRMT_CAPT:
+      takePiece(fromBoard, toBoard, p);
+      promotePawn(fromBoard, rooks);
+      break;
+    case Q_PRMT_CAPT:
+      takePiece(fromBoard, toBoard, p);
+      promotePawn(fromBoard, queens);
+      break;
+    default:
+      break;
+  };
+
+  prevMove = m;
+}
+
 /* 
  * If invalid moves position boards are given to the move functions, 
  * it will leave the board in an invalid state. Right now it is up to the 
- * caller to ensure corrent oldPos and newPos are passed to save time 
+ * caller to ensure corrent from and to are passed to save time 
  * on extra checks. 
  */
 
-void Board::movePiece(uint64_t oldPos, uint64_t newPos, piece p) {
-  m_pieces[p] ^= oldPos;
-  m_pieces[p] |= newPos;
-  m_colors[m_turn] ^= oldPos;
-  m_colors[m_turn] |= newPos;
+void Board::movePiece(uint64_t from, uint64_t to, piece p) {
+  m_pieces[p] ^= from;
+  m_pieces[p] |= to;
+  m_colors[m_turn] ^= from;
+  m_colors[m_turn] |= to;
   if (m_pieces[enPassat]) m_pieces[enPassat] = 0;
   if (m_turn == black) m_fullCounter++;
+  if (p == rooks && (m_pieces[castlingRights] & from)) m_pieces[castlingRights] ^= from;
+  if (p == kings && (m_pieces[castlingRights] & m_colors[m_turn])) m_pieces[castlingRights] ^= m_pieces[castlingRights];
   (p == pawns) ? m_halfClock = 0 : m_halfClock++;
   m_turn == white ? m_turn = black : m_turn = white;
 }
 
-void Board::takePiece(uint64_t oldPos, uint64_t newPos, piece p) {
-  m_colors[!m_turn] ^= newPos;
+void Board::takePiece(uint64_t from, uint64_t to, piece p) {
+  m_colors[!m_turn] ^= to;
   for (int i = 0; i < 6; ++i) {
-    if (newPos & m_pieces[i]) {
-      m_pieces[i] ^= newPos;
+    if (to & m_pieces[i]) {
+      m_pieces[i] ^= to;
     }
   }
-  movePiece(oldPos, newPos, p);
+  movePiece(from, to, p);
   m_halfClock = 0;
 }
 
-void Board::takeEnPassat(uint64_t oldPos, uint64_t newPos, piece p) {
+void Board::takeEnPassat(uint64_t from, uint64_t to, piece p) {
   uint64_t pawnPos = (m_turn == white) ? m_pieces[enPassat] >> 8 : m_pieces[enPassat] << 8;
   m_colors[!m_turn] ^= pawnPos;
   m_pieces[pawns] ^= pawnPos;
-  movePiece(oldPos, newPos, p);
+  movePiece(from, to, p);
   m_halfClock = 0;
 }
 
@@ -220,4 +287,14 @@ void Board::castle(bool kq) {
   m_halfClock++;
   m_pieces[castlingRights] = m_pieces[castlingRights] & m_colors[!m_turn];
   m_turn == white ? m_turn = black : m_turn = white;
+}
+
+piece Board::getPieceAt(uint64_t pos) {
+  if (pos & m_pieces[pawns]) return pawns;
+  if (pos & m_pieces[knights]) return knights;
+  if (pos & m_pieces[bishops]) return bishops;
+  if (pos & m_pieces[rooks]) return rooks;
+  if (pos & m_pieces[queens]) return queens;
+  if (pos & m_pieces[kings]) return kings;
+  return notAPiece;
 }

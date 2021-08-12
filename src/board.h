@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <string>
 
+#include "Move.h"
+
 enum color {
   white,
   black
@@ -18,7 +20,8 @@ enum piece {
   kings,
   // only one side can have an enPassat pawn at a time
   enPassat,
-  castlingRights
+  castlingRights,
+  notAPiece
 };
 
 class Board {
@@ -33,7 +36,7 @@ class Board {
     uint64_t getBByPiece(piece p) const;
     uint64_t getBByColor(color c) const;
     uint64_t getBByPieceAndColor(piece p, color c) const;
-    color getTurn();
+    color getTurn() const;
     unsigned short getHalfClock() const;
     unsigned short getFullCounter() const;
     
@@ -41,20 +44,25 @@ class Board {
     void setPiece(uint64_t b, piece p);
     void clear();
 
-    void movePiece(uint64_t oldPos, uint64_t newPos, piece p);
-    void takePiece(uint64_t oldPos, uint64_t newPos, piece p);
-    void takeEnPassat(uint64_t oldPos, uint64_t newPos, piece p);
+    int makeMove(Move m);
+    int unMakeMove(Move m);
+
+  private:
+    piece getPieceAt(uint64_t pos);
+    void movePiece(uint64_t from, uint64_t to, piece p);
+    void takePiece(uint64_t from, uint64_t to, piece p);
+    void takeEnPassat(uint64_t from, uint64_t to, piece p);
     void promotePawn(uint64_t pos, piece newP);
     // false = kingside, q = queenside
     void castle(bool kq);
 
-  private:
     uint64_t m_colors[2];
     uint64_t m_pieces[8];
     // 0 or false = white, 1 or true = black
     color m_turn;
     unsigned short m_halfClock;
     unsigned short m_fullCounter;
+    Move prevMove;
 };
 
 
