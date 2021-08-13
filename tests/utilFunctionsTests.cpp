@@ -39,3 +39,11 @@ TEST(utilFunctionTests, BBtoPostoBB) {
   EXPECT_EQ(posToBitBoard(bitBoardToPos(0x8000000000000000)), 0x8000000000000000);
   EXPECT_EQ(posToBitBoard(bitBoardToPos(0x0000000000000001)), 0x0000000000000001);
 }
+
+TEST(utilFunctionTests, squareToBit) {
+  EXPECT_EQ(squareToBit("h1"), 0x0000000000000001);
+  EXPECT_EQ(squareToBit("h3"), 0x0000000000010000);
+  EXPECT_EQ(squareToBit("a1"), 0x0000000000000080);
+  EXPECT_EQ(squareToBit("a8"), 0x8000000000000000);
+  EXPECT_EQ(squareToBit("d5"), 0x0000001000000000);
+}

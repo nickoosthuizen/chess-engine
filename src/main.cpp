@@ -5,7 +5,6 @@
 #include "board.h"
 #include "moveGen.h"
 #include "perft.h"
-#include "utilFunctions.h"
 
 struct args {
   std::string fen;

@@ -25,8 +25,23 @@ TEST(boardTests, fenConstructor) {
 }
 
 TEST(boardTests, makeMove) {
-  Move m(8, 24, DOUBLE_PAWN);
   Board b;
-  b.makeMove(m);
-  // EXPECT_EQ()
+  b.makeMove(Move(8, 24, DOUBLE_PAWN));
+  std::string fen = "rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq h3 0 1";
+  EXPECT_EQ(Board(fen), b);
+  b.makeMove(Move(62, 47, REGULAR));
+  fen = "r1bqkbnr/pppppppp/n7/8/7P/8/PPPPPPP1/RNBQKBNR w KQkq - 1 2";
+  EXPECT_EQ(Board(fen), b);
+}
+
+TEST(boardTests, unMakeMove) {
+  Board b;
+  b.makeMove(Move(8, 24, DOUBLE_PAWN));
+  b.unMakeMove();
+  EXPECT_EQ(b, Board());
+  b.makeMove(Move(8, 24, DOUBLE_PAWN));
+  b.makeMove(Move(62, 47, REGULAR));
+  b.unMakeMove();
+  std::string fen = "rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq h3 0 1";
+  EXPECT_EQ(b, Board(fen));
 }
