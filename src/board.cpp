@@ -19,6 +19,12 @@ Board::Board() {
   m_turn = white;
   m_halfClock = 0;
   m_fullCounter = 1;
+
+  m_prevMove = Move();
+  m_prevEnPassat = 0;
+  m_prevCastlingRights = 0;
+  m_prevCapturedPiece = notAPiece;
+  m_prevHalfClock = 0;
 }
 
 Board::Board(std::string fen) {
@@ -114,6 +120,12 @@ Board::Board(std::string fen) {
 
   (isWholeNumber(fields[4])) ? m_halfClock = std::stoi(fields[4], nullptr) : m_halfClock = 0;
   (isWholeNumber(fields[5])) ? m_fullCounter = std::stoi(fields[5], nullptr) : m_fullCounter = 1;
+
+  m_prevMove = Move();
+  m_prevEnPassat = 0;
+  m_prevCastlingRights = 0;
+  m_prevCapturedPiece = notAPiece;
+  m_prevHalfClock = 0;
 } 
 
 bool Board::operator==(const Board& other) const {
