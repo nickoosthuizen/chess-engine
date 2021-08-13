@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <numeric>
 
 #include "perft.h"
 #include "board.h"
@@ -14,7 +15,11 @@ unsigned int perft(int depth, Board b) {
 
   std::vector<Move> moves;
   generateMoves(moves, b);
-  totalMoves += moves.size();
+
+  if (depth == 1) {
+    return moves.size();
+  }
+
   for (int i = 0; i < moves.size(); ++i) {
     b.makeMove(moves[i]);
     totalMoves += perft(depth - 1, b);
@@ -36,6 +41,7 @@ void divide(int depth, Board b) {
     b.unMakeMove();
   }
 
+  std::cout << "Total Moves produced: " << accumulate(numMovesProduced.begin(), numMovesProduced.end(), 0) << std::endl;
   std::cout << "Move | NodesProduced" << std::endl;
 
   for (int i = 0; i < moves.size(); ++i) {

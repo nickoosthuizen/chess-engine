@@ -132,8 +132,8 @@ uint64_t queenMove(uint64_t queen, uint64_t empty, uint64_t pieces) {
 }
 
 uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces) {
-  return oneNoWest(king) | oneNorth(king) | oneNoEast(king) | oneEast(king) |
-          oneSoEast(king) | oneSouth(king) | oneSoWest(king) | oneWest(king) & 
+  return (oneNoWest(king) | oneNorth(king) | oneNoEast(king) | oneEast(king) |
+          oneSoEast(king) | oneSouth(king) | oneSoWest(king) | oneWest(king)) & 
            (empty | pieces);
 }
 
