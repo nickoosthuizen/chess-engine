@@ -5,9 +5,11 @@ set(SOURCES
   boardTests.cpp
   moveGenTests.cpp
   utilFunctionsTests.cpp
+  moveTests.cpp
   ../src/moveGen.cpp
   ../src/board.cpp
   ../src/utilFunctions.cpp
+  ../src/Move.cpp
 )
 
 include(FetchContent)

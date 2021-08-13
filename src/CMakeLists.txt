@@ -4,6 +4,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(SOURCES
   main.cpp
+  Move.cpp
   board.cpp
   moveGen.cpp
   utilFunctions.cpp

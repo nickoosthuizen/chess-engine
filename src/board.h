@@ -69,7 +69,6 @@ class Board {
     uint64_t m_prevCastlingRights;
     piece m_prevCapturedPiece;
     unsigned short m_prevHalfClock;
-
 };
 
 

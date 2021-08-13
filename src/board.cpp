@@ -126,7 +126,15 @@ bool Board::operator==(const Board& other) const {
          (m_pieces[queens] == other.m_pieces[queens]) &&
          (m_pieces[kings] == other.m_pieces[kings]) &&
          (m_pieces[enPassat] == other.m_pieces[enPassat]) &&
-         (m_pieces[castlingRights] == m_pieces[castlingRights]);
+         (m_pieces[castlingRights] == other.m_pieces[castlingRights]) && 
+         (m_turn == other.m_turn) && 
+         (m_halfClock == other.m_halfClock) && 
+         (m_fullCounter == other.m_fullCounter) && 
+         (m_prevMove == other.m_prevMove) && 
+         (m_prevEnPassat == other.m_prevEnPassat) && 
+         (m_prevCastlingRights == other.m_prevCastlingRights) && 
+         (m_prevCapturedPiece == other.m_prevCapturedPiece) && 
+         (m_prevHalfClock == other.m_prevHalfClock);
 }
 
 uint64_t Board::getAllPieces() const { return m_colors[white] | m_colors[black]; }
@@ -148,6 +156,7 @@ int Board::makeMove(Move m) {
   if (!(fromBoard & getAllPieces())) return -1;
 
   m_prevEnPassat = m_pieces[enPassat];
+  m_prevCastlingRights = m_pieces[castlingRights];
   m_prevHalfClock = m_halfClock;
 
   (p == pawns) ? m_halfClock = 0 : m_halfClock++;
@@ -202,7 +211,7 @@ int Board::makeMove(Move m) {
       break;
     default:
       break;
-  };
+  }
 
   m_prevMove = m;
 
@@ -216,10 +225,12 @@ int Board::makeMove(Move m) {
 }
 
 void Board::unMakeMove() {
+  if (m_prevMove.isNone()) return;
+
   uint16_t flag = m_prevMove.getFlag();
   uint64_t prevFromBoard = posToBitBoard(m_prevMove.getFrom());
   uint64_t prevToBoard = posToBitBoard(m_prevMove.getTo());
-  piece p = getPieceAt(prevFromBoard);
+  piece p = getPieceAt(prevToBoard);
   color opponent = m_turn;
   m_turn = (m_turn == white) ? black : white;
 
@@ -238,9 +249,11 @@ void Board::unMakeMove() {
       undoCapture(prevToBoard, m_prevCapturedPiece, opponent);
       break;
     case EP_CAPTURE:
-      movePiece(prevToBoard, prevFromBoard, p);
-      uint64_t pawnPos = (opponent == white) ? prevToBoard >> 8 : prevToBoard << 8;
-      undoCapture(prevToBoard, m_prevCapturedPiece, opponent);
+      {
+        movePiece(prevToBoard, prevFromBoard, p);
+        uint64_t pawnPos = (opponent == white) ? prevToBoard >> 8 : prevToBoard << 8;
+        undoCapture(prevToBoard, m_prevCapturedPiece, opponent);
+      }
       break;
     case KN_PRMT:
       demotePawn(prevFromBoard, prevToBoard, knights);
@@ -276,6 +289,7 @@ void Board::unMakeMove() {
   m_pieces[castlingRights] = m_prevCastlingRights;
   m_halfClock = m_prevHalfClock;
   if (m_turn == black) m_fullCounter--;
+  m_prevMove = Move();
 }
 
 void Board::movePiece(uint64_t from, uint64_t to, piece p) {

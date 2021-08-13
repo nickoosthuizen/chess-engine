@@ -103,32 +103,38 @@ std::string bitToSquare(uint64_t bit) {
   return square;
 }
 
+std::string posToSquare(uint16_t pos) {
+  return bitToSquare(posToBitBoard(pos));
+}
+
 bool isWholeNumber(const std:: string& s) {
   std::string::const_iterator it = s.begin();
   while (it != s.end() && std::isdigit(*it)) it++;
   return !s.empty() && it == s.end();
 }
 
-uint64_t posToBitBoard(uint16_t pos) { return (1 << pos); }
+uint64_t posToBitBoard(uint16_t pos) { 
+  uint64_t ret = 1;
+  return (ret << pos); 
+}
 
 uint16_t bitBoardToPos(uint64_t b) {
   uint16_t pos = 0;
-  if (b & RANK_1) pos += 7;
-  else if (b & RANK_2) pos += 15;
-  else if (b & RANK_3) pos += 23;
-  else if (b & RANK_4) pos += 31;
-  else if (b & RANK_5) pos += 39;
-  else if (b & RANK_6) pos += 47;
-  else if (b & RANK_7) pos += 55;
-  else if (b & RANK_8) pos += 63;
+  if (b & FILE_A) pos += 7;
+  else if (b & FILE_B) pos += 6;
+  else if (b & FILE_C) pos += 5;
+  else if (b & FILE_D) pos += 4;
+  else if (b & FILE_E) pos += 3;
+  else if (b & FILE_F) pos += 2;
+  else if (b & FILE_G) pos += 1;
 
-  if (b & FILE_B) pos -= 1;
-  else if (b & FILE_C) pos -= 2;
-  else if (b & FILE_D) pos -= 3;
-  else if (b & FILE_E) pos -= 4;
-  else if (b & FILE_F) pos -= 5;
-  else if (b & FILE_G) pos -= 6;
-  else if (b & FILE_H) pos -= 7;
+  if (b & RANK_2) pos += 8;
+  else if (b & RANK_3) pos += 16;
+  else if (b & RANK_4) pos += 24;
+  else if (b & RANK_5) pos += 32;
+  else if (b & RANK_6) pos += 40;
+  else if (b & RANK_7) pos += 48;
+  else if (b & RANK_8) pos += 56;
 
   return pos;
 }

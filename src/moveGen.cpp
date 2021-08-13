@@ -5,6 +5,7 @@
 #include "board.h"
 #include "constants.h"
 #include "utilFunctions.h"
+#include "Move.h"
 
 uint64_t oneNorth(uint64_t b) { return b << 8; }
 uint64_t oneSouth(uint64_t b) { return b >> 8; }

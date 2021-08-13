@@ -130,6 +130,7 @@ TEST(rookTests, rookMove) {
   EXPECT_EQ(rookMove(0x0000000042000000, 0x0000FFFFBDFF0000, 0xff02000000004000), 0x00024242bd424000);
 }
 
+/*
 TEST(generateTests, genPawnBoards) {
   Board b, singlePush, doublePush, attackOne, attackTwo;
   std::vector<Board> nextBoards;
@@ -162,3 +163,4 @@ TEST(generateTests, genPawnBoards) {
   }
 
 }
+*/
