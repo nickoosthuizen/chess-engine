@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <stack>
 
 #include "Move.h"
 
@@ -23,7 +24,13 @@ enum piece {
   castlingRights,
   notAPiece
 };
-
+struct prevMoveInfo {
+  Move prevMove;
+  uint64_t prevEP;
+  uint64_t prevCastlingRights;
+  piece prevCaptured;
+  unsigned short prevHalfClock;
+};
 class Board {
   public:
     Board();
@@ -63,12 +70,7 @@ class Board {
     unsigned short m_halfClock;
     unsigned short m_fullCounter;
     
-    // values for unmake move
-    Move m_prevMove;
-    uint64_t m_prevEnPassat;
-    uint64_t m_prevCastlingRights;
-    piece m_prevCapturedPiece;
-    unsigned short m_prevHalfClock;
+    std::stack<prevMoveInfo> m_prevMoves;
 };
 
 
