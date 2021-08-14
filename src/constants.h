@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-// initialization constants
+// Board initialization constants
 const uint64_t WHITE_START = 0x000000000000FFFF;
 const uint64_t BLACK_START = 0xFFFF000000000000;
 const uint64_t PAWN_START = 0x00FF00000000FF00;

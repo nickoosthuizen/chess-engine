@@ -45,10 +45,36 @@ void divide(int depth, Board& b) {
     b.unMakeMove();
   }
 
-  std::cout << "Total Moves produced: " << accumulate(numMovesProduced.begin(), numMovesProduced.end(), 0) << std::endl;
-  std::cout << "Move | NodesProduced" << std::endl;
-
   for (int i = 0; i < numMovesProduced.size(); ++i) {
-    std::cout << moves[i].toString() << " | " << numMovesProduced[i] << std::endl;
+    std::cout << moves[i].toString() << ": " << numMovesProduced[i] << std::endl;
+  }
+
+  std::cout << std::endl;
+  std::cout << "Nodes Searched: " << accumulate(numMovesProduced.begin(), numMovesProduced.end(), 0) << std::endl;
+
+  std::string input;
+  while (true) {
+    std::getline(std::cin, input);
+    if (input == "back") {
+      return;
+    }
+
+    for (int i = 0; i < moves.size(); ++i) {
+      if (input == moves[i].toString()) {
+        std::cout << std::endl;
+        b.makeMove(moves[i]);
+        divide(depth - 1, b);
+        b.unMakeMove();
+
+        // reprint the current generated moves after returning as returns will only happen
+        // after a "back" input
+        for (int i = 0; i < numMovesProduced.size(); ++i) {
+          std::cout << moves[i].toString() << ": " << numMovesProduced[i] << std::endl;
+        }
+
+        std::cout << std::endl;
+        std::cout << "Nodes Searched: " << accumulate(numMovesProduced.begin(), numMovesProduced.end(), 0) << std::endl;
+      }
+    }
   }
 }

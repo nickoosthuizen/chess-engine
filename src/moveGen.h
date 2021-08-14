@@ -8,6 +8,7 @@
 #include "board.h"
 #include "Move.h"
 
+// shifts bits in specified direction,
 uint64_t oneNorth(uint64_t b);
 uint64_t oneSouth(uint64_t b);
 uint64_t oneEast(uint64_t b);
@@ -17,16 +18,20 @@ uint64_t oneNoWest(uint64_t b);
 uint64_t oneSoEast(uint64_t b);
 uint64_t oneSoWest(uint64_t b);
 
-void isolateBits(std::vector<uint64_t> &boards, uint64_t b);
+void isolateBits(std::vector<uint64_t>& boards, uint64_t b);
 
+// pawn logic is different for each side and for pushes and attacks
+// generate the full pawn push bit board
 uint64_t whitePawnPush(uint64_t whitePawns, uint64_t empty);
 uint64_t whitePawnPushTwo(uint64_t whitePawns, uint64_t empty);
 uint64_t blackPawnPush(uint64_t blackPawns, uint64_t empty);
 uint64_t blackPawnPushTwo(uint64_t blackPawns, uint64_t empty);
 
+// generate the full pawn attack bit board
 uint64_t whitePawnAttack(uint64_t whitePawns, uint64_t blackPieces);
 uint64_t blackPawnAttack(uint64_t blackPawns, uint64_t whitePieces);
 
+// generate the full piece move and attack bit board
 uint64_t knightMove(uint64_t knights, uint64_t empty, uint64_t pieces);
 uint64_t bishopMove(uint64_t bishops, uint64_t empty, uint64_t pieces);
 uint64_t rookMove(uint64_t rooks, uint64_t empty, uint64_t pieces);
@@ -37,6 +42,7 @@ bool areSquaresAttacked(const Board& b, uint64_t attacked);
 bool isInCheck(const Board& b);
 
 void generatePawnBoards(std::vector<Move>& newMoves, const Board& current);
+// logic is the same for non pawn move boards
 void generatePieceBoards(std::vector<Move>& newMoves, const Board& current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove);
 void generateCastleBoards(std::vector<Move>& newMoves, const Board& current);
 void generateMoves(std::vector<Move>& newMoves, const Board& current);

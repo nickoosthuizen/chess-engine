@@ -7,6 +7,22 @@
 #include "utilFunctions.h"
 #include "Move.h"
 
+/*
+ * Ex: 000001000000 (hypothetical 12 bit unsigned integer)
+ *    0000
+ *    0100
+ *    0000
+ * 
+ *    One north = 010000000000
+ *    0100
+ *    0000
+ *    0000
+ * 
+ *    One East = 000000100000
+ *    0000
+ *    0010
+ *    0000
+ */
 uint64_t oneNorth(uint64_t b) { return b << 8; }
 uint64_t oneSouth(uint64_t b) { return b >> 8; }
 uint64_t oneEast(uint64_t b) { return (b & NOT_FILE_H) >> 1; }
@@ -20,6 +36,7 @@ void isolateBits(std::vector<uint64_t> &boards, uint64_t b) {
   if (0 < boards.size()) {
     boards.clear();
   }
+  // Isolate the least significant bit set to 1 and push it to boards
   uint64_t lsb;
   while (b) {
     lsb = b & -b;
@@ -149,10 +166,10 @@ bool areSquaresAttacked(const Board& b, uint64_t attacked) {
     if (whitePawnAttack(b.getBByPieceAndColor(pawns, opponent), attacked) & attacked) return true;
   }
   if (knightMove(b.getBByPieceAndColor(knights, opponent), empty, ownB) & attacked) return true;
-  if (bishopMove(b.getBByPieceAndColor(bishops, opponent), empty, ownB) & attacked) return true;
-  if (rookMove(b.getBByPieceAndColor(rooks, opponent), empty, ownB) & attacked) return true;
-  if (queenMove(b.getBByPieceAndColor(queens, opponent), empty, ownB) & attacked) return true;
-  if (kingMove(b.getBByPieceAndColor(kings, opponent), empty, ownB) & attacked) return true;
+  else if (bishopMove(b.getBByPieceAndColor(bishops, opponent), empty, ownB) & attacked) return true;
+  else if (rookMove(b.getBByPieceAndColor(rooks, opponent), empty, ownB) & attacked) return true;
+  else if (queenMove(b.getBByPieceAndColor(queens, opponent), empty, ownB) & attacked) return true;
+  else if (kingMove(b.getBByPieceAndColor(kings, opponent), empty, ownB) & attacked) return true;
   return false;
 }
 
@@ -170,6 +187,7 @@ void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
   for (int i = 0; i < individualPawns.size(); ++i) {
     from = bitBoardToPos(individualPawns[i]);
     attackBoards.clear();
+
     if (current.getTurn() == white) {
       onePushBoard = whitePawnPush(individualPawns[i], current.getEmptySquares());
       twoPushBoard = whitePawnPushTwo(individualPawns[i], current.getEmptySquares());
@@ -180,6 +198,7 @@ void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
       twoPushBoard = blackPawnPushTwo(individualPawns[i], current.getEmptySquares());
       isolateBits(attackBoards, blackPawnAttack(individualPawns[i], current.getBByColor(white) | current.getBByPiece(enPassat)));
     }
+
     if (onePushBoard) {
       to = bitBoardToPos(onePushBoard);
       if (onePushBoard & RANK_1 || onePushBoard & RANK_8) {
@@ -192,14 +211,15 @@ void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
         newMoves.push_back(Move(from, to, REGULAR));
       }
     }
+
     if (twoPushBoard) {
       to = bitBoardToPos(twoPushBoard);
       newMoves.push_back(Move(from, to, DOUBLE_PAWN));
     }
+
     for (int j = 0; j < attackBoards.size(); j++) {
       to = bitBoardToPos(attackBoards[j]);
       if (attackBoards[j] & current.getBByPiece(enPassat)) {
-        // newBoard.takeEnPassat(individualPawns[i], attackBoards[j], pawns);
         newMoves.push_back(Move(from, to, EP_CAPTURE));
       }
       else if ((attackBoards[j] & RANK_1) || (attackBoards[j] & RANK_8)) {
@@ -216,7 +236,6 @@ void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
   return;
 }
 
-// Note: has extra logic for handling castling rights, see about removing it
 void generatePieceBoards(std::vector<Move>& newMoves, const Board& current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove) {
   std::vector<uint64_t> individualPieces, moves;
   uint64_t moveBoard;
