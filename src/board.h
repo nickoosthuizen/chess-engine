@@ -50,6 +50,10 @@ class Board {
     int makeMove(Move m);
     void unMakeMove();
 
+    // return a FEN string representation of the board to make testing 
+    // against other engines easier
+    std::string toFen();
+
   private:
     piece getPieceAt(uint64_t pos);
     void movePiece(uint64_t from, uint64_t to, piece p);

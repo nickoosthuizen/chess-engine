@@ -317,6 +317,89 @@ void Board::unMakeMove() {
   if (m_turn == black) m_fullCounter--;
 }
 
+std::string Board::toFen() {
+  uint64_t curBit;
+  piece p;
+  char curPiece;
+  std::string fen = "";
+
+  int n = 63;
+  int emptyCounter = 0;
+  for (n; 0 <= n; --n) {
+    curBit = posToBitBoard(n);
+    if (curBit & getEmptySquares()) {
+      emptyCounter++;
+    }
+    else {
+      if (0 < emptyCounter) {
+        fen += std::to_string(emptyCounter);
+        emptyCounter = 0;
+      }
+      p = getPieceAt(curBit);
+      switch (p) {
+        case pawns:
+          curPiece = 'p';
+          break;
+        case knights:
+          curPiece = 'n';
+          break;
+        case bishops:
+          curPiece = 'b';
+          break;
+        case rooks:
+          curPiece = 'r';
+          break;
+        case queens:
+          curPiece = 'q';
+          break;
+        case kings:
+          curPiece = 'k';
+          break;
+      }
+      if (curBit & m_colors[white]) curPiece = toupper(curPiece);
+      fen += curPiece;
+    }
+
+    if (n % 8 == 0 && n != 0) {
+      if (0 < emptyCounter) {
+        fen += std::to_string(emptyCounter);
+        emptyCounter = 0;
+      }
+      fen += '/';
+    }
+  }
+
+  fen += ' ';
+
+  m_turn == white ? fen += 'w' : fen += 'b';
+
+  fen += ' ';
+
+  if (m_pieces[castlingRights] & m_colors[white] & FILE_A) fen += 'K';
+  if (m_pieces[castlingRights] & m_colors[white] & FILE_H) fen += 'Q';
+  if (m_pieces[castlingRights] & m_colors[black] & FILE_A) fen += 'k';
+  if (m_pieces[castlingRights] & m_colors[black] & FILE_H) fen += 'q';
+
+  if (!m_pieces[castlingRights]) fen += '-';
+
+  fen += ' ';
+
+  if (m_pieces[enPassat]) fen += posToSquare(bitBoardToPos(m_pieces[enPassat]));
+  else fen += '-';
+
+  fen += ' ';
+
+  fen += std::to_string(m_halfClock);
+
+  fen += ' ';
+
+  fen += std::to_string(m_fullCounter);
+
+  return fen;
+}
+
+// ================ Private Functions ================
+
 void Board::movePiece(uint64_t from, uint64_t to, piece p) {
   m_pieces[p] ^= from;
   m_pieces[p] |= to;

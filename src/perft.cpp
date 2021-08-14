@@ -10,7 +10,7 @@ unsigned int perft(int depth, Board& b) {
   unsigned int totalMoves = 0;
 
   if (depth == 0) {
-    return 0;
+    return 1;
   }
 
   std::vector<Move> moves;
@@ -57,6 +57,10 @@ void divide(int depth, Board& b) {
     std::getline(std::cin, input);
     if (input == "back") {
       return;
+    }
+
+    if (input == "fen") {
+      std::cout << b.toFen() << std::endl << std:: endl;
     }
 
     for (int i = 0; i < moves.size(); ++i) {

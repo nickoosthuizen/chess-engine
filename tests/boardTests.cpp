@@ -66,3 +66,12 @@ TEST(boardTests, unMakeMove) {
   b.unMakeMove();
   EXPECT_EQ(b, Board());
 }
+
+TEST(boardTests, boardToFen) {
+  Board b;
+  EXPECT_EQ(b.toFen(), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+  b = Board("r1bqkbnr/pppppppp/n7/8/7P/8/PPPPPPP1/RNBQKBNR w KQkq - 1 2");
+  EXPECT_EQ(b.toFen(), "r1bqkbnr/pppppppp/n7/8/7P/8/PPPPPPP1/RNBQKBNR w KQkq - 1 2");
+  b = Board("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2");
+  EXPECT_EQ(b.toFen(), "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2");
+}
