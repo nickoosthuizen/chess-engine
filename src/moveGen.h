@@ -34,6 +34,7 @@ uint64_t queenMove(uint64_t queen, uint64_t empty, uint64_t pieces);
 uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces);
 
 bool areSquaresAttacked(const Board& b, uint64_t attacked);
+bool isInCheck(const Board& b);
 
 void generatePawnBoards(std::vector<Move>& newMoves, const Board& current);
 void generatePieceBoards(std::vector<Move>& newMoves, const Board& current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove);

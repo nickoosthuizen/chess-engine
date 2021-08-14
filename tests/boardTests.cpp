@@ -4,6 +4,7 @@
 #include "board.h"
 #include "constants.h"
 #include "Move.h"
+#include "utilFunctions.h"
 
 TEST(boardTests, defaultConstructor) {
   Board b;
@@ -26,22 +27,42 @@ TEST(boardTests, fenConstructor) {
 
 TEST(boardTests, makeMove) {
   Board b;
-  b.makeMove(Move(8, 24, DOUBLE_PAWN));
+  b.makeMove(Move(squareToPos("h2"), squareToPos("h4"), DOUBLE_PAWN));
   std::string fen = "rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq h3 0 1";
   EXPECT_EQ(Board(fen), b);
-  b.makeMove(Move(62, 47, REGULAR));
+  b.makeMove(Move(squareToPos("b8"), squareToPos("a6"), REGULAR));
   fen = "r1bqkbnr/pppppppp/n7/8/7P/8/PPPPPPP1/RNBQKBNR w KQkq - 1 2";
   EXPECT_EQ(Board(fen), b);
 }
 
 TEST(boardTests, unMakeMove) {
+  // Ordinary pawn pushes
   Board b;
-  b.makeMove(Move(8, 24, DOUBLE_PAWN));
+  b.makeMove(Move(squareToPos("h2"), squareToPos("h4"), DOUBLE_PAWN));
   b.unMakeMove();
   EXPECT_EQ(b, Board());
-  b.makeMove(Move(8, 24, DOUBLE_PAWN));
-  b.makeMove(Move(62, 47, REGULAR));
+  b.makeMove(Move(squareToPos("h2"), squareToPos("h4"), DOUBLE_PAWN));
+  b.makeMove(Move(squareToPos("b8"), squareToPos("a6"), REGULAR));
   b.unMakeMove();
-  std::string fen = "rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq h3 0 1";
-  EXPECT_EQ(b, Board(fen));
+  std::string h2h4b8a6 = "rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq h3 0 1";
+  EXPECT_EQ(b, Board(h2h4b8a6));
+  b.unMakeMove();
+  EXPECT_EQ(b, Board());
+
+  // Pawn capture
+  b.makeMove(Move(squareToPos("e2"), squareToPos("e4"), DOUBLE_PAWN));
+  std::string e2e4 = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1";
+  EXPECT_EQ(b, Board(e2e4));
+  b.makeMove(Move(squareToPos("d7"), squareToPos("d5"), DOUBLE_PAWN));
+  std::string e2e4d7d5 = "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2";
+  EXPECT_EQ(b, Board(e2e4d7d5));
+  b.makeMove(Move(squareToPos("e4"), squareToPos("d5"), CAPTURE));
+  std::string e2e4d7d5e4d5 = "rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2";
+  EXPECT_EQ(b, Board(e2e4d7d5e4d5));
+  b.unMakeMove();
+  EXPECT_EQ(b, Board(e2e4d7d5));
+  b.unMakeMove();
+  EXPECT_EQ(b, Board(e2e4));
+  b.unMakeMove();
+  EXPECT_EQ(b, Board());
 }

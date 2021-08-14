@@ -80,6 +80,10 @@ uint64_t squareToBit(std::string square) {
   return s;
 }
 
+uint16_t squareToPos(std::string square) {
+  return bitBoardToPos(squareToBit(square));
+}
+
 std::string bitToSquare(uint64_t bit) {
   std::string square = "";
   if (bit & FILE_A) square += "a";

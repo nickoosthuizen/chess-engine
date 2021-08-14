@@ -7,6 +7,7 @@
 
 void split(std::string toSplit, std::string delimiter, std::vector<std::string> &splitStrings);
 uint64_t squareToBit(std::string square);
+uint16_t squareToPos(std::string square);
 std::string bitToSquare(uint64_t bit);
 std::string posToSquare(uint16_t pos);
 bool isWholeNumber(const std:: string& s);

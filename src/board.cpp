@@ -163,7 +163,7 @@ int Board::makeMove(Move m) {
       break;
     case DOUBLE_PAWN:
       movePiece(fromBoard, toBoard, p);
-      (m_turn == white) ? m_pieces[enPassat] |= fromBoard << 8 : m_pieces[enPassat] |= fromBoard >> 8;
+      (m_turn == white) ? m_pieces[enPassat] = fromBoard << 8 : m_pieces[enPassat] = fromBoard >> 8;
       break;
     case K_CASTLE:
       castle(false);

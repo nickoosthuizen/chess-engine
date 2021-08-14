@@ -22,15 +22,14 @@ int main(int argc, char *argv[]) {
     b = Board(passed.fen);
   }
 
-  
   if (passed.mode == 'p' && -1 < passed.depth) {
     unsigned int numNodes = perft(passed.depth, b);
     std::cout << "The number of nodes generated was: " << numNodes << std::endl;
   }
   
- if (passed.mode == 'd' && -1 < passed.depth) {
-   divide(passed.depth, b);
- }
+  if (passed.mode == 'd' && -1 < passed.depth) {
+    divide(passed.depth, b);
+  }
   return 0;
 }
 
