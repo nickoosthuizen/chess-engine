@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 }
 
 struct args parseArgs(int argc, char *argv[]) {
-  const char *opstring = "dfp";
+  const char *opstring = "d:f:p:";
   struct option longOpts[4] = {{"divide", required_argument, nullptr, 'd'},
                                {"fen", required_argument, nullptr, 'f'},
                                {"perft", required_argument, nullptr, 'p'},

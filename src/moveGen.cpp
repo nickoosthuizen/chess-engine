@@ -174,7 +174,7 @@ void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
     else {
       onePushBoard = blackPawnPush(individualPawns[i], current.getEmptySquares());
       twoPushBoard = blackPawnPushTwo(individualPawns[i], current.getEmptySquares());
-      isolateBits(attackBoards, whitePawnAttack(individualPawns[i], current.getBByColor(white) | current.getBByPiece(enPassat)));
+      isolateBits(attackBoards, blackPawnAttack(individualPawns[i], current.getBByColor(white) | current.getBByPiece(enPassat)));
     }
     if (onePushBoard) {
       to = bitBoardToPos(onePushBoard);
@@ -194,11 +194,11 @@ void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
     }
     for (int j = 0; j < attackBoards.size(); j++) {
       to = bitBoardToPos(attackBoards[j]);
-      if (attackBoards[i] & current.getBByPiece(enPassat)) {
+      if (attackBoards[j] & current.getBByPiece(enPassat)) {
         // newBoard.takeEnPassat(individualPawns[i], attackBoards[j], pawns);
         newMoves.push_back(Move(from, to, EP_CAPTURE));
       }
-      else if (attackBoards[i] & RANK_1 || attackBoards[i] & RANK_8) {
+      else if ((attackBoards[j] & RANK_1) || (attackBoards[j] & RANK_8)) {
         newMoves.push_back(Move(from, to, KN_PRMT_CAPT));
         newMoves.push_back(Move(from, to, B_PRMT_CAPT));
         newMoves.push_back(Move(from, to, R_PRMT_CAPT));
