@@ -38,8 +38,8 @@ uint64_t rookMove(uint64_t rooks, uint64_t empty, uint64_t pieces);
 uint64_t queenMove(uint64_t queen, uint64_t empty, uint64_t pieces);
 uint64_t kingMove(uint64_t king, uint64_t empty, uint64_t pieces);
 
-bool areSquaresAttacked(const Board& b, uint64_t attacked);
-bool isInCheck(const Board& b);
+bool areSquaresAttacked(const Board& b, color attacker, uint64_t attacked);
+bool isInCheck(const Board& b, color side);
 
 void generatePawnBoards(std::vector<Move>& newMoves, const Board& current);
 // logic is the same for non pawn move boards

@@ -8,6 +8,7 @@
 
 unsigned int perft(int depth, Board& b) {
   unsigned int totalMoves = 0;
+  color turn;
 
   if (depth == 0) {
     return 1;
@@ -21,8 +22,9 @@ unsigned int perft(int depth, Board& b) {
   }
 
   for (int i = 0; i < moves.size(); ++i) {
+    turn = b.getTurn();
     b.makeMove(moves[i]);
-    if (!isInCheck(b)) {
+    if (!isInCheck(b, turn)) {
       totalMoves += perft(depth - 1, b);
     }
     b.unMakeMove();
@@ -32,14 +34,16 @@ unsigned int perft(int depth, Board& b) {
 
 void divide(int depth, Board& b) {
   if (depth == 0) return;
+  color turn;
 
   std::vector<Move> moves;
   std::vector<int> numMovesProduced;
   generateMoves(moves, b);
   
   for (int i = 0; i < moves.size(); ++i) {
+    turn = b.getTurn();
     b.makeMove(moves[i]);
-    if (!isInCheck(b)) {
+    if (!isInCheck(b, turn)) {
       numMovesProduced.push_back(perft(depth - 1, b));
     }
     b.unMakeMove();
