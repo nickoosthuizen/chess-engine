@@ -6,6 +6,7 @@ set(SOURCES
   moveGenTests.cpp
   utilFunctionsTests.cpp
   moveTests.cpp
+  perftTests.cpp
   ../src/moveGen.cpp
   ../src/board.cpp
   ../src/utilFunctions.cpp
