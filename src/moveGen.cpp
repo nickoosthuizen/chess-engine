@@ -273,15 +273,16 @@ void generateCastleBoards(std::vector<Move>& newMoves, const Board &current) {
   color c = current.getTurn();
   color opponent = (c == white) ? black : white; 
   uint64_t rank = (c == white) ? RANK_1 : RANK_8;
+  uint64_t colorStart = (c == white) ? WHITE_START : BLACK_START;
   if ((current.getBByPieceAndColor(castlingRights, c) & FILE_A) 
         && !(current.getAllPieces() & (Q_SIDE_BTWN_K_AND_R & rank))
         && !(areSquaresAttacked(current, opponent, Q_SIDE_VULN_SQUARES & rank))) {
-    newMoves.push_back(Move(0, 0, Q_CASTLE));
+    newMoves.push_back(Move(KING_START & colorStart, Q_SIDE_KING_CASTLE & colorStart, Q_CASTLE));
   }
   if ((current.getBByPieceAndColor(castlingRights, c) & FILE_H) 
         && !(current.getAllPieces() & (K_SIDE_BTWN_K_AND_R & rank))
         && !(areSquaresAttacked(current, opponent, K_SIDE_VULN_SQUARES & rank))) {
-    newMoves.push_back(Move(0, 0, K_CASTLE));
+    newMoves.push_back(Move(KING_START & colorStart, K_SIDE_KING_CASTLE & colorStart, K_CASTLE));
   }
   return;
 }

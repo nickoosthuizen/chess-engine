@@ -167,8 +167,7 @@ int Board::makeMove(Move m) {
   uint64_t toBoard = posToBitBoard(m.getTo());
   piece pToMove = getPieceAt(fromBoard);
 
-  if (pToMove == notAPiece && flag != K_CASTLE && flag != Q_CASTLE) return -1;
-  if (!(fromBoard & getAllPieces())) return -1;
+  if (pToMove == notAPiece) return -1;
 
   struct prevMoveInfo prev = {m, m_pieces[enPassat], m_pieces[castlingRights], notAPiece, m_halfClock};
 

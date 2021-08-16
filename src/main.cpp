@@ -4,7 +4,6 @@
 
 #include "board.h"
 #include "perft.h"
-
 struct args {
   std::string fen;
   char mode;

@@ -89,9 +89,9 @@ TEST(boardTests, boardToFen) {
 
 TEST(boardTests, castlingMakeUnMake) {
   Board b("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 10");
-  b.makeMove(Move(0, 1, REGULAR));
+  b.makeMove(Move(squareToPos("h1"), squareToPos("g1"), REGULAR));
   EXPECT_EQ(b, Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K1R1 b Qkq - 1 10"));
-  b.makeMove(Move(0, 0, Q_CASTLE));
+  b.makeMove(Move(squareToPos("e8"), squareToPos("c8"), Q_CASTLE));
   EXPECT_EQ(b, Board("2kr3r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K1R1 w Q - 2 11"));
   b.unMakeMove();
   EXPECT_EQ(b, Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K1R1 b Qkq - 1 10"));

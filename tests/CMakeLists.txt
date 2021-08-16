@@ -1,7 +1,5 @@
 set(BINARY ${CMAKE_PROJECT_NAME}_test)
 
-set(CMAKE_BUILD_TYPE Debug)
-
 set(SOURCES 
   main.cpp
   boardTests.cpp

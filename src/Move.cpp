@@ -23,18 +23,5 @@ uint16_t Move::getFlag() const { return (m_move >> 12) & 0x0F; }
 bool Move::isNone() const { return m_move == 0; }
 
 std::string Move::toString() {
-  std::string out = "";
-  uint16_t flag = getFlag();
-  
-  if (flag == Q_CASTLE) {
-    out = "QC";
-  }
-  else if (flag == K_CASTLE) {
-    out = "KC";
-  }
-  else {
-    out += posToSquare(getFrom());
-    out += posToSquare(getTo());
-  }
-  return out;
+  return posToSquare(getFrom()) + posToSquare(getTo());
 }
