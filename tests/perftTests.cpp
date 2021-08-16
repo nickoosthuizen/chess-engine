@@ -28,7 +28,7 @@ TEST(perftTests, position3) {
   ASSERT_EQ(perft(2, b), 191);
   ASSERT_EQ(perft(3, b), 2812);
   ASSERT_EQ(perft(4, b), 43238);
-  ASSERT_EQ(perft(5, b), 674625);
+  ASSERT_EQ(perft(5, b), 674624);
 }
 
 TEST(perftTests, position4) {
