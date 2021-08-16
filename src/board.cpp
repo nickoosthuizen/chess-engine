@@ -196,36 +196,40 @@ int Board::makeMove(Move m) {
       takeEnPassat(fromBoard, toBoard, pToMove);
       break;
     case KN_PRMT:
-      promotePawn(fromBoard, knights);
+      movePiece(fromBoard, toBoard, pawns);
+      promotePawn(toBoard, knights);
       break;
     case B_PRMT:
-      promotePawn(fromBoard, bishops);
+      movePiece(fromBoard, toBoard, pawns);
+      promotePawn(toBoard, bishops);
       break;
     case R_PRMT:
-      promotePawn(fromBoard, rooks);
+      movePiece(fromBoard, toBoard, pawns);
+      promotePawn(toBoard, rooks);
       break;
     case Q_PRMT:
-      promotePawn(fromBoard, queens);
+      movePiece(fromBoard, toBoard, pawns);
+      promotePawn(toBoard, queens);
       break;
     case KN_PRMT_CAPT:
       prev.prevCaptured = getPieceAt(toBoard);
-      takePiece(fromBoard, toBoard, pToMove);
-      promotePawn(fromBoard, knights);
+      takePiece(fromBoard, toBoard, pawns);
+      promotePawn(toBoard, knights);
       break;
     case B_PRMT_CAPT:
       prev.prevCaptured = getPieceAt(toBoard);
-      takePiece(fromBoard, toBoard, pToMove);
-      promotePawn(fromBoard, bishops);
+      takePiece(fromBoard, toBoard, pawns);
+      promotePawn(toBoard, bishops);
       break;
     case R_PRMT_CAPT:
       prev.prevCaptured = getPieceAt(toBoard);
-      takePiece(fromBoard, toBoard, pToMove);
-      promotePawn(fromBoard, rooks);
+      takePiece(fromBoard, toBoard, pawns);
+      promotePawn(toBoard, rooks);
       break;
     case Q_PRMT_CAPT:
       prev.prevCaptured = getPieceAt(toBoard);
-      takePiece(fromBoard, toBoard, pToMove);
-      promotePawn(fromBoard, queens);
+      takePiece(fromBoard, toBoard, pawns);
+      promotePawn(toBoard, queens);
       break;
     default:
       break;

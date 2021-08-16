@@ -98,3 +98,24 @@ TEST(boardTests, castlingMakeUnMake) {
   b.unMakeMove();
   EXPECT_EQ(b, Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 10"));
 }
+
+TEST(boardTests, promotionTests) {
+  Board b("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/1PN2Q1P/P1PBBPp1/R3K2R b KQkq - 0 11");
+  Board verify("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/1PN2Q1P/P1PBBPp1/R3K2R b KQkq - 0 11");
+  b.makeMove(Move(squareToPos("g2"), squareToPos("g1"), KN_PRMT));
+  EXPECT_EQ(b, Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/1PN2Q1P/P1PBBP2/R3K1nR w KQkq - 0 12"));
+  b.unMakeMove();
+  EXPECT_EQ(b, verify);
+  b.makeMove(Move(squareToPos("g2"), squareToPos("g1"), B_PRMT));
+  EXPECT_EQ(b, Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/1PN2Q1P/P1PBBP2/R3K1bR w KQkq - 0 12"));
+  b.unMakeMove();
+  EXPECT_EQ(b, verify);
+  b.makeMove(Move(squareToPos("g2"), squareToPos("g1"), R_PRMT));
+  EXPECT_EQ(b, Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/1PN2Q1P/P1PBBP2/R3K1rR w KQkq - 0 12"));
+  b.unMakeMove();
+  EXPECT_EQ(b, verify);
+  b.makeMove(Move(squareToPos("g2"), squareToPos("g1"), Q_PRMT));
+  EXPECT_EQ(b, Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/1PN2Q1P/P1PBBP2/R3K1qR w KQkq - 0 12"));
+  b.unMakeMove();
+  EXPECT_EQ(b, verify);
+}
