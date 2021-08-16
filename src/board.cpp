@@ -193,7 +193,7 @@ int Board::makeMove(Move m) {
       takePiece(fromBoard, toBoard, pToMove);
       break;
     case EP_CAPTURE:
-      prev.prevCaptured = getPieceAt(toBoard);
+      prev.prevCaptured = pawns;
       takeEnPassat(fromBoard, toBoard, pToMove);
       break;
     case KN_PRMT:
@@ -277,8 +277,8 @@ void Board::unMakeMove() {
     case EP_CAPTURE:
       {
         movePiece(prevToBoard, prevFromBoard, pMoved);
-        uint64_t pawnPos = (opponent == white) ? prevToBoard >> 8 : prevToBoard << 8;
-        undoCapture(prevToBoard, prev.prevCaptured, opponent);
+        uint64_t pawnPos = (opponent == white) ? prevToBoard << 8 : prevToBoard >> 8;
+        undoCapture(pawnPos, prev.prevCaptured, opponent);
       }
       break;
     case KN_PRMT:
@@ -360,25 +360,24 @@ std::string Board::toFen() {
       fen += curPiece;
     }
 
-    if (n % 8 == 0 && n != 0) {
+    if (n % 8 == 0) {
       if (0 < emptyCounter) {
         fen += std::to_string(emptyCounter);
         emptyCounter = 0;
       }
-      fen += '/';
+      if (n != 0) fen += '/';
     }
   }
-
   fen += ' ';
 
   m_turn == white ? fen += 'w' : fen += 'b';
 
   fen += ' ';
 
-  if (m_pieces[castlingRights] & m_colors[white] & FILE_A) fen += 'K';
-  if (m_pieces[castlingRights] & m_colors[white] & FILE_H) fen += 'Q';
-  if (m_pieces[castlingRights] & m_colors[black] & FILE_A) fen += 'k';
-  if (m_pieces[castlingRights] & m_colors[black] & FILE_H) fen += 'q';
+  if (m_pieces[castlingRights] & m_colors[white] & FILE_H) fen += 'K';
+  if (m_pieces[castlingRights] & m_colors[white] & FILE_A) fen += 'Q';
+  if (m_pieces[castlingRights] & m_colors[black] & FILE_H) fen += 'k';
+  if (m_pieces[castlingRights] & m_colors[black] & FILE_A) fen += 'q';
 
   if (!m_pieces[castlingRights]) fen += '-';
 

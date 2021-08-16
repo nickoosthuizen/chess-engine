@@ -1,6 +1,7 @@
 #include <vector>
 #include <iostream>
 #include <numeric>
+#include <assert.h>
 
 #include "perft.h"
 #include "board.h"
@@ -9,6 +10,7 @@
 unsigned int perft(int depth, Board& b) {
   unsigned int totalMoves = 0;
   color turn;
+  Board verify = b;
 
   if (depth == 0) {
     return 1;
@@ -17,10 +19,6 @@ unsigned int perft(int depth, Board& b) {
   std::vector<Move> moves;
   generateMoves(moves, b);
 
-  if (depth == 1) {
-    return moves.size();
-  }
-
   for (int i = 0; i < moves.size(); ++i) {
     turn = b.getTurn();
     b.makeMove(moves[i]);
@@ -28,6 +26,7 @@ unsigned int perft(int depth, Board& b) {
       totalMoves += perft(depth - 1, b);
     }
     b.unMakeMove();
+    assert (b == verify);
   }
   return totalMoves;
 }

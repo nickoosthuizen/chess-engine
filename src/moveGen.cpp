@@ -175,7 +175,7 @@ bool areSquaresAttacked(const Board& b, color attacker, uint64_t attacked) {
 
 bool isInCheck(const Board& b, color side) {
   color attacker = (side == white) ? black : white;
-  return areSquaresAttacked(b, attacker, b.getBByPieceAndColor(kings, b.getTurn()));
+  return areSquaresAttacked(b, attacker, b.getBByPieceAndColor(kings, side));
 }
 
 void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
