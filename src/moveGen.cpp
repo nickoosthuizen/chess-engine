@@ -270,19 +270,35 @@ void generatePieceBoards(std::vector<Move>& newMoves, const Board& current, piec
 
 void generateCastleBoards(std::vector<Move>& newMoves, const Board &current) {
   Board newBoard;
-  color c = current.getTurn();
-  color opponent = (c == white) ? black : white; 
-  uint64_t rank = (c == white) ? RANK_1 : RANK_8;
-  uint64_t colorStart = (c == white) ? WHITE_START : BLACK_START;
+  uint16_t kingPos, qSidePos, kSidePos;
+  color opponent, c;
+  uint64_t rank;
+  
+  c = current.getTurn();
+  if (c == white) {
+    opponent = black;
+    rank = RANK_1;
+    kingPos = 3;
+    qSidePos = 5;
+    kSidePos = 1;
+  }
+  else {
+    opponent = white;
+    rank = RANK_8;
+    kingPos = 59;
+    qSidePos = 61;
+    kSidePos = 57;
+  }
+
   if ((current.getBByPieceAndColor(castlingRights, c) & FILE_A) 
         && !(current.getAllPieces() & (Q_SIDE_BTWN_K_AND_R & rank))
         && !(areSquaresAttacked(current, opponent, Q_SIDE_VULN_SQUARES & rank))) {
-    newMoves.push_back(Move(KING_START & colorStart, Q_SIDE_KING_CASTLE & colorStart, Q_CASTLE));
+    newMoves.push_back(Move(kingPos, qSidePos, Q_CASTLE));
   }
   if ((current.getBByPieceAndColor(castlingRights, c) & FILE_H) 
         && !(current.getAllPieces() & (K_SIDE_BTWN_K_AND_R & rank))
         && !(areSquaresAttacked(current, opponent, K_SIDE_VULN_SQUARES & rank))) {
-    newMoves.push_back(Move(KING_START & colorStart, K_SIDE_KING_CASTLE & colorStart, K_CASTLE));
+    newMoves.push_back(Move(kingPos, qSidePos, K_CASTLE));
   }
   return;
 }
