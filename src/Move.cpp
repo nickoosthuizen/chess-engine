@@ -23,5 +23,24 @@ uint16_t Move::getFlag() const { return (m_move >> 12) & 0x0F; }
 bool Move::isNone() const { return m_move == 0; }
 
 std::string Move::toString() {
-  return posToSquare(getFrom()) + posToSquare(getTo());
+  std::string output = posToSquare(getFrom()) + posToSquare(getTo());
+  switch(getFlag()) {
+    case KN_PRMT:
+    case KN_PRMT_CAPT:
+      output += "n";
+      break;
+    case B_PRMT:
+    case B_PRMT_CAPT:
+      output += "b";
+      break;
+    case R_PRMT:
+    case R_PRMT_CAPT:
+      output += "r";
+      break;
+    case Q_PRMT:
+    case Q_PRMT_CAPT:
+      output += "q";
+      break;
+  }
+  return output;
 }

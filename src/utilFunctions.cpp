@@ -147,3 +147,69 @@ int populationCount(uint64_t n) {
   std::bitset<64> num (n);
   return num.count();
 }
+
+bool isValidFen(std::string fen) {
+  std::vector<std::string> fields;
+  std::vector<std::string> rows;
+  int wKingPos, bKingPos;
+  wKingPos = bKingPos = -1;
+
+  split(fen, " ", fields);
+  if (fields.size() < 4) return false;
+  
+  split(fields[0], "/", rows);
+  if (rows.size() != 8) return false;
+
+  int rowCounter;
+  char c;
+  for (int i = 0; i < 8; ++i) {
+    rowCounter = 0;
+    for (int j = 0; j < rows[i].size(); ++j) {
+      c = tolower(rows[i][j]);
+      if (c == 'p' || c == 'n' || c == 'b' || c == 'r' || c == 'q' || c == 'k') {
+        if (rows[i][j] == 'k') bKingPos = i * 8 + rowCounter;
+        else if (rows[i][j] == 'K') wKingPos = i * 8 + rowCounter; 
+        rowCounter += 1;
+      }
+      else if (isdigit(c)) {
+        rowCounter += (c - '0');
+      }
+      else {
+        return false;
+      }
+    }
+    if (rowCounter != 8) return false;
+  }
+
+  if (fields[1] != "w" && fields[1] != "b") return false;
+  if (fields[2] != "-") {
+    for (int i = 0; i < fields[2].size(); ++i) {
+      if (fields[2][i] == 'Q') {
+        if (wKingPos != 60) return false;
+        if (rows[7][0] != 'R') return false;
+      }
+      else if (fields[2][i] == 'K') {
+        if (wKingPos != 60) return false;
+        if (rows[7][rows[7].length() - 1] != 'R') return false;
+      }
+      else if (fields[2][i] == 'q') {
+        if (bKingPos != 4) return false;
+        if (rows[0][0] != 'r') return false;
+      }
+      else if (fields[2][i] == 'k') {
+        if (bKingPos != 4) return false;
+        if (rows[0][rows[0].length() - 1] != 'r') return false;
+      }
+      else {
+        return false;
+      }
+    }
+  }
+
+  if (fields[3] != "-" && !squareToBit(fields[3])) return false;
+
+  if (4 < fields.size() && !isWholeNumber(fields[4])) return false;
+  if (5 < fields.size() && !isWholeNumber(fields[5])) return false;
+
+  return true;
+}

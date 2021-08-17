@@ -47,7 +47,7 @@ class Board {
     unsigned short getHalfClock() const;
     unsigned short getFullCounter() const;
 
-    int makeMove(Move m);
+    void makeMove(Move m);
     void unMakeMove();
 
     // return a FEN string representation of the board to make testing 

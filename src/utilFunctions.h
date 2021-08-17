@@ -16,4 +16,6 @@ uint64_t posToBitBoard(uint16_t pos);
 uint16_t bitBoardToPos(uint64_t b);
 int populationCount(uint64_t n);
 
+bool isValidFen(std::string fen); 
+
 #endif

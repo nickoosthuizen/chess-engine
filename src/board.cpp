@@ -161,13 +161,13 @@ color Board::getTurn() const { return m_turn; }
 unsigned short Board::getHalfClock() const { return m_halfClock; }
 unsigned short Board::getFullCounter() const { return m_fullCounter; }
 
-int Board::makeMove(Move m) {
+void Board::makeMove(Move m) {
   uint16_t flag = m.getFlag();
   uint64_t fromBoard = posToBitBoard(m.getFrom());
   uint64_t toBoard = posToBitBoard(m.getTo());
   piece pToMove = getPieceAt(fromBoard);
 
-  if (pToMove == notAPiece) return -1;
+  if (pToMove == notAPiece) return;
 
   struct prevMoveInfo prev = {m, m_pieces[enPassat], m_pieces[castlingRights], notAPiece, m_halfClock};
 
@@ -244,7 +244,6 @@ int Board::makeMove(Move m) {
   (m_turn == white) ? m_turn = black : m_turn = white;
 
   m_prevMoves.push(prev);
-  return 0;
 }
 
 void Board::unMakeMove() {
