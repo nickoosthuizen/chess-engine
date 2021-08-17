@@ -38,6 +38,7 @@ void Game::handleInput() {
       else {
         std::cout << "Invalid depth" << std::endl;
       }
+      std::cout << std::endl;
     }
     else if (words[0] == "divide") {
       if (isWholeNumber(words[1])) {
@@ -47,6 +48,7 @@ void Game::handleInput() {
       else {
         std::cout << "Invalid depth" << std::endl;
       }
+      std::cout << std::endl;
     }
   }
 }
@@ -59,6 +61,8 @@ void Game::handleNewFen(std::string fen) {
   else {
     std::cout << "FEN string is incorrect" << std::endl;
   }
+
+  std::cout << std::endl;
 }
 
 void Game::handleMove(std::string m) {
@@ -86,6 +90,7 @@ void Game::handleMove(std::string m) {
   else {
     std::cout << "Invalid move" << std::endl;
   }
+  std::cout << std::endl;
 }
 
 void Game::display() {
@@ -97,13 +102,13 @@ void Game::display() {
 
   int emptyCounter;
   for (int i = 0; i < 8; ++i) {
-    std::cout << "=================" << std::endl;
+    std::cout << "-----------------" << std::endl;
     std::cout << "|";
     for (int j = 0; j < rows[i].size(); ++j) {
       if (isdigit(rows[i][j])) {
         emptyCounter = rows[i][j] - '0';
         for (int k = 0; k < emptyCounter; ++k) {
-          std::cout << " |" << std::endl;
+          std::cout << " |";
         }
       }
       else {
@@ -112,11 +117,12 @@ void Game::display() {
     }
     std::cout << std::endl;
   }
-  std::cout << "=================" << std::endl;
+  std::cout << "-----------------" << std::endl;
 
   std::cout << "Turn to Move: " << fields[1] << std::endl;
   std::cout << "Castling Rights: " << fields[2] << std::endl;
   std::cout << "Square currently en passat: " << fields[3] << std::endl;
   std::cout << "Half Move Counter: " << fields[4] << std::endl;
   std::cout << "Full Move Counter: " << fields[5] << std::endl;
+  std::cout << std::endl;
 }
