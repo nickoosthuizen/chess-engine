@@ -31,7 +31,7 @@ inline uint64_t oneNoWest(uint64_t b) { return (b & NOT_FILE_A) << 9; }
 inline uint64_t oneSoEast(uint64_t b) { return (b & NOT_FILE_H) >> 9; }
 inline uint64_t oneSoWest(uint64_t b) { return (b & NOT_FILE_A) >> 7; }
 
-void isolateBits(std::vector<uint64_t>& boards, uint64_t b);
+inline uint64_t getLSB(uint64_t b) { return b & -b; }
 
 // pawn logic is different for each side and for pushes and attacks
 // generate the full pawn push bit board
