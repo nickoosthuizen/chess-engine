@@ -10,6 +10,7 @@
 #include "perft.h"
 #include "evaluate.h"
 
+
 void Game::handleInput() {
   std::vector<std::string> words;
   while (true) {

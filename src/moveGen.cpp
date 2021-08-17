@@ -23,14 +23,6 @@
  *    0010
  *    0000
  */
-uint64_t oneNorth(uint64_t b) { return b << 8; }
-uint64_t oneSouth(uint64_t b) { return b >> 8; }
-uint64_t oneEast(uint64_t b) { return (b & NOT_FILE_H) >> 1; }
-uint64_t oneWest(uint64_t b) { return (b & NOT_FILE_A) << 1; }
-uint64_t oneNoEast(uint64_t b) { return (b & NOT_FILE_H) << 7; }
-uint64_t oneNoWest(uint64_t b) { return (b & NOT_FILE_A) << 9; }
-uint64_t oneSoEast(uint64_t b) { return (b & NOT_FILE_H) >> 9; }
-uint64_t oneSoWest(uint64_t b) { return (b & NOT_FILE_A) >> 7; }
 
 void isolateBits(std::vector<uint64_t> &boards, uint64_t b) {
   if (0 < boards.size()) {
@@ -73,17 +65,18 @@ uint64_t blackPawnAttack(uint64_t blackPawns, uint64_t whitePieces) {
 }
 
 uint64_t knightMove(uint64_t knights, uint64_t empty, uint64_t pieces) {
-  uint64_t newKnights = 0;
-  uint64_t temp = 0;
-  temp = oneNoWest(knights);
-  newKnights = newKnights | oneWest(temp) | oneNorth(temp);
-  temp = oneNoEast(knights);
-  newKnights = newKnights | oneEast(temp) | oneNorth(temp);
-  temp = oneSoWest(knights);
-  newKnights = newKnights | oneWest(temp) | oneSouth(temp);
-  temp = oneSoEast(knights);
-  newKnights = (newKnights | oneEast(temp) | oneSouth(temp)) & (empty | pieces);
-  return newKnights;
+  return knightLookupTable[bitBoardToPos(knights)] & (empty | pieces);
+}
+
+uint64_t multKnightMove(uint64_t knights, uint64_t empty, uint64_t pieces) {
+  uint64_t knight, totalAttackBoard;
+  totalAttackBoard = 0;
+  while (knights) {
+    knight = knights & -knights;
+    knights ^= knight;
+    totalAttackBoard |= knightMove(knight, empty, pieces);
+  }
+  return totalAttackBoard;
 }
 
 uint64_t bishopMove(uint64_t bishops, uint64_t empty, uint64_t pieces) {
@@ -165,7 +158,7 @@ bool areSquaresAttacked(const Board& b, color attacker, uint64_t attacked) {
   else {
     if (blackPawnAttack(b.getBByPieceAndColor(pawns, attacker), attacked) & attacked) return true;
   }
-  if (knightMove(b.getBByPieceAndColor(knights, attacker), empty, ownB) & attacked) return true;
+  if (multKnightMove(b.getBByPieceAndColor(knights, attacker), empty, ownB) & attacked) return true;
   else if (bishopMove(b.getBByPieceAndColor(bishops, attacker), empty, ownB) & attacked) return true;
   else if (rookMove(b.getBByPieceAndColor(rooks, attacker), empty, ownB) & attacked) return true;
   else if (queenMove(b.getBByPieceAndColor(queens, attacker), empty, ownB) & attacked) return true;
