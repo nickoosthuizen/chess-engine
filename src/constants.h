@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include <cstdint>
+#include <climits>
 
 // Board initialization constants
 const uint64_t WHITE_START = 0x000000000000FFFF;
@@ -61,5 +62,17 @@ const uint16_t KN_PRMT_CAPT = 0x0A;
 const uint16_t B_PRMT_CAPT = 0x0B;
 const uint16_t R_PRMT_CAPT = 0x0C;
 const uint16_t Q_PRMT_CAPT = 0x0D;
+
+//Piece scores
+const int PAWN_VAL = 1;
+const int KNIGHT_VAL = 3;
+const int BISHOP_VAL = 3;
+const int ROOK_VAL = 5;
+const int QUEEN_VAL = 9;
+const int CHECK_MATE_WIN = INT_MAX;
+// CHECK_MATE_LOSE is INT_MIN + 1 to be able to select an initial move
+// even if it means a loss
+const int CHECK_MATE_LOSE = INT_MIN + 1;
+const int DRAW_VAL = 0;
 
 #endif
