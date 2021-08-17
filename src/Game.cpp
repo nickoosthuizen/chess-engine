@@ -8,6 +8,7 @@
 #include "moveGen.h"
 #include "utilFunctions.h"
 #include "perft.h"
+#include "evaluate.h"
 
 void Game::handleInput() {
   std::vector<std::string> words;
@@ -20,6 +21,9 @@ void Game::handleInput() {
 
     if (words[0] == "display") {
       display();
+    }
+    else if (words[0] == "suggest") {
+      suggestMove();
     }
 
     if (words.size() < 2) continue;
@@ -125,4 +129,9 @@ void Game::display() {
   std::cout << "Half Move Counter: " << fields[4] << std::endl;
   std::cout << "Full Move Counter: " << fields[5] << std::endl;
   std::cout << std::endl;
+}
+
+void Game::suggestMove() {
+  Move best = pickMove(m_state, 4, pieceCountScore);
+  std::cout << "engine suggests: " << best.toString() << std::endl;
 }

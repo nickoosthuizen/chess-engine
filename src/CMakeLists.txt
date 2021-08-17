@@ -10,6 +10,7 @@ set(SOURCES
   utilFunctions.cpp
   perft.cpp
   Game.cpp
+  evaluate.cpp
 )
 
 add_executable(${BINARY} ${SOURCES})

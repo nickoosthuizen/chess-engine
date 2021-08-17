@@ -1,6 +1,6 @@
 #include <vector>
 #include <string>
-#include <bitset>
+#include <bit>
 
 #include "utilFunctions.h"
 #include "constants.h"
@@ -144,8 +144,7 @@ uint16_t bitBoardToPos(uint64_t b) {
 }
 
 int populationCount(uint64_t n) {
-  std::bitset<64> num (n);
-  return num.count();
+  return std::popcount(n);
 }
 
 bool isValidFen(std::string fen) {

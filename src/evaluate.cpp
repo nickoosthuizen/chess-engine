@@ -3,6 +3,7 @@
 #include <vector>
 #include <climits>
 
+#include "evaluate.h"
 #include "Board.h"
 #include "Move.h"
 #include "moveGen.h"

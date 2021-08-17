@@ -11,6 +11,7 @@ class Game {
     void handleInput();
     void handleNewFen(std::string input);
     void handleMove(std::string input);
+    void suggestMove();
     void display();
 
   private:
