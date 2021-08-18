@@ -2,7 +2,6 @@
 #include <functional>
 #include <vector>
 #include <climits>
-#include <bit>
 
 #include "evaluate.h"
 #include "Board.h"
@@ -98,16 +97,9 @@ int noMovesAvailable(const Board& b, color side) {
 
 int pieceCountScore(const Board& b, color side) {
   color opposing = side == white ? black : white;
-  uint64_t sidePieces = b.getBByColor(side);
-  uint64_t opposingPieces = b.getBByColor(opposing);
-  uint64_t pns = b.getBByPiece(pawns);
-  uint64_t nts = b.getBByPiece(knights);
-  uint64_t bsps = b.getBByPiece(bishops);
-  uint64_t rks = b.getBByPiece(rooks);
-  uint64_t qns = b.getBByPiece(queens);
-  return (((std::popcount(sidePieces & pns) - std::popcount(opposingPieces & pns)) * PAWN_VAL) + 
-          ((std::popcount(sidePieces & nts) - std::popcount(opposingPieces & nts)) * KNIGHT_VAL) + 
-          ((std::popcount(sidePieces & bsps) - std::popcount(opposingPieces & bsps)) * BISHOP_VAL) + 
-          ((std::popcount(sidePieces & rks) - std::popcount(opposingPieces & rks))* ROOK_VAL) + 
-          ((std::popcount(sidePieces & qns) - std::popcount(opposingPieces & qns)) * QUEEN_VAL));
+  return (((b.getPieceCount(pawns, side) - b.getPieceCount(pawns, opposing)) * PAWN_VAL) + 
+          ((b.getPieceCount(knights, side) - b.getPieceCount(knights, opposing)) * KNIGHT_VAL) + 
+          ((b.getPieceCount(bishops, side) - b.getPieceCount(bishops, opposing)) * BISHOP_VAL) + 
+          ((b.getPieceCount(rooks, side) - b.getPieceCount(rooks, opposing))* ROOK_VAL) + 
+          ((b.getPieceCount(queens, side) - b.getPieceCount(queens, opposing)) * QUEEN_VAL));
 }

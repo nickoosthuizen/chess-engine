@@ -117,8 +117,7 @@ bool isWholeNumber(const std:: string& s) {
 }
 
 uint64_t posToBitBoard(uint16_t pos) { 
-  uint64_t ret = 1;
-  return (ret << pos); 
+  return (1ULL << pos); 
 }
 
 uint16_t bitBoardToPos(uint64_t b) {

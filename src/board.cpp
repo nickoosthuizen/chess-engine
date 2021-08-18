@@ -16,9 +16,22 @@ Board::Board() {
   m_pieces[kings] = KING_START;
   m_pieces[enPassat] = 0;
   m_pieces[castlingRights] = ROOK_START;
+  m_pieceCounts[white][pawns] = 8;
+  m_pieceCounts[white][knights] = 2;
+  m_pieceCounts[white][bishops] = 2;
+  m_pieceCounts[white][rooks] = 2;
+  m_pieceCounts[white][queens] = 1;
+  m_pieceCounts[white][kings] = 1;
+  m_pieceCounts[black][pawns] = 8;
+  m_pieceCounts[black][knights] = 2;
+  m_pieceCounts[black][bishops] = 2;
+  m_pieceCounts[black][rooks] = 2;
+  m_pieceCounts[black][queens] = 1;
+  m_pieceCounts[black][kings] = 1;
   m_turn = white;
   m_halfClock = 0;
   m_fullCounter = 1;
+  
 }
 
 /* 
@@ -50,9 +63,22 @@ Board::Board(std::string fen) {
   m_pieces[kings] = 0;
   m_pieces[enPassat] = 0;
   m_pieces[castlingRights] = 0;
+  m_pieceCounts[white][pawns] = 0;
+  m_pieceCounts[white][knights] = 0;
+  m_pieceCounts[white][bishops] = 0;
+  m_pieceCounts[white][rooks] = 0;
+  m_pieceCounts[white][queens] = 0;
+  m_pieceCounts[white][kings] = 0;
+  m_pieceCounts[black][pawns] = 0;
+  m_pieceCounts[black][knights] = 0;
+  m_pieceCounts[black][bishops] = 0;
+  m_pieceCounts[black][rooks] = 0;
+  m_pieceCounts[black][queens] = 0;
+  m_pieceCounts[black][kings] = 0;
   m_turn = white;
   m_halfClock = 0;
   m_fullCounter = 0;
+  
 
   std::vector<std::string> fields, rows;
   split(fen, " ", fields);
@@ -60,14 +86,18 @@ Board::Board(std::string fen) {
   split(fields[0], "/", rows);
   if (rows.size() != 8) return;
 
+  color current;
+
   int n = 63;
   for (int i = 0; i < rows.size(); ++i) {
     for (int j = 0; j < rows[i].size(); j++) {
       if (isupper(rows[i][j])) {
         m_colors[white] |= posToBitBoard(n);
+        current = white;
       }
       else if (islower(rows[i][j])) {
         m_colors[black] |= posToBitBoard(n);
+        current = black;
       }
       else if (isdigit(rows[i][j])) {
         n -= (rows[i][j] - '0');
@@ -81,21 +111,27 @@ Board::Board(std::string fen) {
       switch (tolower(rows[i][j])) {
         case 'p':
           m_pieces[pawns] |= posToBitBoard(n);
+          m_pieceCounts[current][pawns]++;
           break;
         case 'n':
           m_pieces[knights] |= posToBitBoard(n);
+          m_pieceCounts[current][knights]++;
           break;
         case 'r':
           m_pieces[rooks] |= posToBitBoard(n);
+          m_pieceCounts[current][rooks]++;
           break;
         case 'b': 
           m_pieces[bishops] |= posToBitBoard(n);
+          m_pieceCounts[current][bishops]++;
           break;
         case 'q':
           m_pieces[queens] |= posToBitBoard(n);
+          m_pieceCounts[current][queens]++;
           break;
         case 'k':
           m_pieces[kings] |= posToBitBoard(n);
+          m_pieceCounts[current][kings]++;
           break;
       }
 
@@ -157,6 +193,7 @@ uint64_t Board::getEmptySquares() const { return ~(m_colors[white] | m_colors[bl
 uint64_t Board::getBByPiece(piece p) const { return m_pieces[p]; }
 uint64_t Board::getBByColor(color c) const { return m_colors[c]; }
 uint64_t Board::getBByPieceAndColor(piece p, color c) const { return m_pieces[p] & m_colors[c]; }
+int Board::getPieceCount(piece p, color c) const { return m_pieceCounts[c][p]; }
 color Board::getTurn() const { return m_turn; }
 unsigned short Board::getHalfClock() const { return m_halfClock; }
 unsigned short Board::getFullCounter() const { return m_fullCounter; }
@@ -166,6 +203,7 @@ void Board::makeMove(Move m) {
   uint64_t fromBoard = posToBitBoard(m.getFrom());
   uint64_t toBoard = posToBitBoard(m.getTo());
   piece pToMove = getPieceAt(fromBoard);
+  piece capturedPiece = notAPiece;
 
   if (pToMove == notAPiece) return;
 
@@ -188,11 +226,13 @@ void Board::makeMove(Move m) {
       castle(true);
       break;
     case CAPTURE:
-      prev.prevCaptured = getPieceAt(toBoard);
-      takePiece(fromBoard, toBoard, pToMove);
+      capturedPiece = getPieceAt(toBoard);
+      m_pieceCounts[!m_turn][capturedPiece]--;
+      takePiece(fromBoard, toBoard, pToMove, capturedPiece);
       break;
     case EP_CAPTURE:
-      prev.prevCaptured = pawns;
+      capturedPiece = pawns;
+      m_pieceCounts[!m_turn][capturedPiece]--;
       takeEnPassat(fromBoard, toBoard, pToMove);
       break;
     case KN_PRMT:
@@ -212,28 +252,34 @@ void Board::makeMove(Move m) {
       promotePawn(toBoard, queens);
       break;
     case KN_PRMT_CAPT:
-      prev.prevCaptured = getPieceAt(toBoard);
-      takePiece(fromBoard, toBoard, pawns);
+      capturedPiece = getPieceAt(toBoard);
+      m_pieceCounts[!m_turn][capturedPiece]--;
+      takePiece(fromBoard, toBoard, pawns, capturedPiece);
       promotePawn(toBoard, knights);
       break;
     case B_PRMT_CAPT:
-      prev.prevCaptured = getPieceAt(toBoard);
-      takePiece(fromBoard, toBoard, pawns);
+      capturedPiece = getPieceAt(toBoard);
+      m_pieceCounts[!m_turn][capturedPiece]--;
+      takePiece(fromBoard, toBoard, pawns, capturedPiece);
       promotePawn(toBoard, bishops);
       break;
     case R_PRMT_CAPT:
-      prev.prevCaptured = getPieceAt(toBoard);
-      takePiece(fromBoard, toBoard, pawns);
+      capturedPiece = getPieceAt(toBoard);
+      m_pieceCounts[!m_turn][capturedPiece]--;
+      takePiece(fromBoard, toBoard, pawns, capturedPiece);
       promotePawn(toBoard, rooks);
       break;
     case Q_PRMT_CAPT:
-      prev.prevCaptured = getPieceAt(toBoard);
-      takePiece(fromBoard, toBoard, pawns);
+      capturedPiece = getPieceAt(toBoard);
+      m_pieceCounts[!m_turn][capturedPiece]--;
+      takePiece(fromBoard, toBoard, pawns, capturedPiece);
       promotePawn(toBoard, queens);
       break;
     default:
       break;
   }
+
+  prev.prevCaptured = capturedPiece;
 
   if (flag != DOUBLE_PAWN && m_pieces[enPassat]) m_pieces[enPassat] = 0;
   if (m_turn == black) m_fullCounter++;
@@ -273,11 +319,13 @@ void Board::unMakeMove() {
       undoCastle(true);
       break;
     case CAPTURE:
+      m_pieceCounts[opponent][prev.prevCaptured]++;
       movePiece(prevToBoard, prevFromBoard, pMoved);
       undoCapture(prevToBoard, prev.prevCaptured, opponent);
       break;
     case EP_CAPTURE:
       {
+        m_pieceCounts[opponent][prev.prevCaptured]++;
         movePiece(prevToBoard, prevFromBoard, pMoved);
         uint64_t pawnPos = (opponent == white) ? prevToBoard << 8 : prevToBoard >> 8;
         undoCapture(pawnPos, prev.prevCaptured, opponent);
@@ -296,18 +344,22 @@ void Board::unMakeMove() {
       demotePawn(prevFromBoard, prevToBoard, queens);
       break;
     case KN_PRMT_CAPT:
+      m_pieceCounts[opponent][prev.prevCaptured]++;
       demotePawn(prevFromBoard, prevToBoard, knights);
       undoCapture(prevToBoard, prev.prevCaptured, opponent);
       break;
     case B_PRMT_CAPT:
+      m_pieceCounts[opponent][prev.prevCaptured]++;
       demotePawn(prevFromBoard, prevToBoard, bishops);
       undoCapture(prevToBoard, prev.prevCaptured, opponent);
       break;
     case R_PRMT_CAPT:
+      m_pieceCounts[opponent][prev.prevCaptured]++;
       demotePawn(prevFromBoard, prevToBoard, rooks);
       undoCapture(prevToBoard, prev.prevCaptured, opponent);
       break;
     case Q_PRMT_CAPT:
+      m_pieceCounts[opponent][prev.prevCaptured]++;
       demotePawn(prevFromBoard, prevToBoard, queens);
       undoCapture(prevToBoard, prev.prevCaptured, opponent);
       break;
@@ -408,9 +460,8 @@ void Board::movePiece(uint64_t from, uint64_t to, piece p) {
   m_colors[m_turn] |= to;
 }
 
-void Board::takePiece(uint64_t from, uint64_t to, piece p) {
+void Board::takePiece(uint64_t from, uint64_t to, piece p, piece capturePiece) {
   m_colors[!m_turn] ^= to;
-  piece capturePiece = getPieceAt(to);
   m_pieces[capturePiece] ^= to;
   movePiece(from, to, p);
   m_halfClock = 0;

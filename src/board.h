@@ -43,6 +43,7 @@ class Board {
     uint64_t getBByPiece(piece p) const;
     uint64_t getBByColor(color c) const;
     uint64_t getBByPieceAndColor(piece p, color c) const;
+    int getPieceCount(piece p, color c) const;
     color getTurn() const;
     unsigned short getHalfClock() const;
     unsigned short getFullCounter() const;
@@ -57,7 +58,7 @@ class Board {
   private:
     piece getPieceAt(uint64_t pos);
     void movePiece(uint64_t from, uint64_t to, piece p);
-    void takePiece(uint64_t from, uint64_t to, piece p);
+    void takePiece(uint64_t from, uint64_t to, piece p, piece capturePiece);
     void takeEnPassat(uint64_t from, uint64_t to, piece p);
     void promotePawn(uint64_t pos, piece newP);
     // false = kingside, q = queenside
@@ -69,6 +70,8 @@ class Board {
 
     uint64_t m_colors[2];
     uint64_t m_pieces[8];
+
+    int m_pieceCounts[2][6];
 
     color m_turn;
     unsigned short m_halfClock;
