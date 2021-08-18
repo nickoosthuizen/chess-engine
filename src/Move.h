@@ -10,10 +10,10 @@ class Move {
     Move(uint16_t from, uint16_t to, uint16_t flag);
     bool operator==(const Move& other) const;
 
-    uint16_t getFrom() const;
-    uint16_t getTo() const;
-    uint16_t getFlag() const;
-    bool isNone() const;
+    inline uint16_t getFrom() const { return (m_move >> 6) & 0x3F; }
+    inline uint16_t getTo() const { return m_move & 0x3F; }
+    inline uint16_t getFlag() const { return (m_move >> 12) & 0x0F; }
+    inline bool isNone() const { return m_move == 0; }
     
     std::string toString();
 

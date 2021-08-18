@@ -17,11 +17,6 @@ bool Move::operator==(const Move& other) const {
   return m_move == other.m_move;
 }
 
-uint16_t Move::getFrom() const { return (m_move >> 6) & 0x3F; }
-uint16_t Move::getTo() const { return m_move & 0x3F; }
-uint16_t Move::getFlag() const { return (m_move >> 12) & 0x0F; }
-bool Move::isNone() const { return m_move == 0; }
-
 std::string Move::toString() {
   std::string output = posToSquare(getFrom()) + posToSquare(getTo());
   switch(getFlag()) {

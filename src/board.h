@@ -38,15 +38,15 @@ class Board {
     Board(std::string fen);
     bool operator==(const Board& other) const;
 
-    uint64_t getAllPieces() const;
-    uint64_t getEmptySquares() const;
-    uint64_t getBByPiece(piece p) const;
-    uint64_t getBByColor(color c) const;
-    uint64_t getBByPieceAndColor(piece p, color c) const;
-    int getPieceCount(piece p, color c) const;
-    color getTurn() const;
-    unsigned short getHalfClock() const;
-    unsigned short getFullCounter() const;
+    inline uint64_t getAllPieces() const { return m_colors[white] | m_colors[black]; }
+    inline uint64_t getEmptySquares() const { return ~(m_colors[white] | m_colors[black]); }
+    inline uint64_t getBByPiece(piece p) const { return m_pieces[p]; }
+    inline uint64_t getBByColor(color c) const { return m_colors[c]; }
+    inline uint64_t getBByPieceAndColor(piece p, color c) const { return m_pieces[p] & m_colors[c]; }
+    inline int getPieceCount(piece p, color c) const { return m_pieceCounts[c][p]; }
+    inline color getTurn() const { return m_turn; }
+    inline unsigned short getHalfClock() const { return m_halfClock; }
+    inline unsigned short getFullCounter() const { return m_fullCounter; }
 
     void makeMove(Move m);
     void unMakeMove();

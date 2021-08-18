@@ -188,16 +188,6 @@ bool Board::operator==(const Board& other) const {
          (m_fullCounter == other.m_fullCounter);
 }
 
-uint64_t Board::getAllPieces() const { return m_colors[white] | m_colors[black]; }
-uint64_t Board::getEmptySquares() const { return ~(m_colors[white] | m_colors[black]); }
-uint64_t Board::getBByPiece(piece p) const { return m_pieces[p]; }
-uint64_t Board::getBByColor(color c) const { return m_colors[c]; }
-uint64_t Board::getBByPieceAndColor(piece p, color c) const { return m_pieces[p] & m_colors[c]; }
-int Board::getPieceCount(piece p, color c) const { return m_pieceCounts[c][p]; }
-color Board::getTurn() const { return m_turn; }
-unsigned short Board::getHalfClock() const { return m_halfClock; }
-unsigned short Board::getFullCounter() const { return m_fullCounter; }
-
 void Board::makeMove(Move m) {
   uint16_t flag = m.getFlag();
   uint64_t fromBoard = posToBitBoard(m.getFrom());
