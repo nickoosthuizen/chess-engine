@@ -158,10 +158,15 @@ bool isInCheck(const Board& b, color side) {
 }
 
 void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
-  uint64_t allPawns, individualPawn, onePushBoard, twoPushBoard, attackBoard, oneAttack;
+  uint64_t allPawns, individualPawn, onePushBoard, twoPushBoard, attackBoard, oneAttack, empty, ep, opposing;
   uint16_t from, to;
+  color c = current.getTurn();
+  color opponent = c == white ? black : white;
 
   allPawns = current.getBByPieceAndColor(pawns, current.getTurn());
+  empty = current.getEmptySquares();
+  ep = current.getBByPiece(enPassat);
+  opposing = current.getBByColor(opponent);
 
   while (allPawns) {
     individualPawn = getLSB(allPawns);
@@ -169,15 +174,15 @@ void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
 
     from = bitBoardToPos(individualPawn);
 
-    if (current.getTurn() == white) {
-      onePushBoard = whitePawnPush(individualPawn, current.getEmptySquares());
-      twoPushBoard = whitePawnPushTwo(individualPawn, current.getEmptySquares());
-      attackBoard = whitePawnAttack(individualPawn, current.getBByColor(black) | current.getBByPiece(enPassat));
+    if (c == white) {
+      onePushBoard = whitePawnPush(individualPawn, empty);
+      twoPushBoard = whitePawnPushTwo(individualPawn, empty);
+      attackBoard = whitePawnAttack(individualPawn, opposing | ep);
     }
     else {
-      onePushBoard = blackPawnPush(individualPawn, current.getEmptySquares());
-      twoPushBoard = blackPawnPushTwo(individualPawn, current.getEmptySquares());
-      attackBoard = blackPawnAttack(individualPawn, current.getBByColor(white) | current.getBByPiece(enPassat));
+      onePushBoard = blackPawnPush(individualPawn, empty);
+      twoPushBoard = blackPawnPushTwo(individualPawn, empty);
+      attackBoard = blackPawnAttack(individualPawn, opposing | ep);
     }
 
     if (onePushBoard) {
@@ -202,7 +207,7 @@ void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
       oneAttack = getLSB(attackBoard);
       attackBoard ^= oneAttack;
       to = bitBoardToPos(oneAttack);
-      if (oneAttack & current.getBByPiece(enPassat)) {
+      if (oneAttack & ep) {
         newMoves.push_back(Move(from, to, EP_CAPTURE));
       }
       else if ((oneAttack & RANK_1) || (oneAttack & RANK_8)) {
@@ -220,18 +225,22 @@ void generatePawnBoards(std::vector<Move>& newMoves, const Board& current) {
 }
 
 void generatePieceBoards(std::vector<Move>& newMoves, const Board& current, piece p, std::function<uint64_t(uint64_t, uint64_t, uint64_t)> pieceMove) {
-  uint64_t individualPiece, allPieces, individualMove, allMoves;
+  uint64_t individualPiece, allPieces, individualMove, allMoves, empty, ep, opposingPieces;
   uint16_t from, to;
   color c = current.getTurn();
   color opponent = (c == white) ? black : white;
 
   allPieces = current.getBByPieceAndColor(p, c);
   
+  empty = current.getEmptySquares();
+  ep = current.getBByPiece(enPassat);
+  opposingPieces = current.getBByColor(opponent);
+
   while (allPieces) {
     individualPiece = getLSB(allPieces);
     allPieces ^= individualPiece;
 
-    allMoves = pieceMove(individualPiece, current.getEmptySquares(), current.getBByColor(opponent) | current.getBByPiece(enPassat));
+    allMoves = pieceMove(individualPiece, empty, opposingPieces | ep);
     
     from = bitBoardToPos(individualPiece);
 
@@ -241,10 +250,10 @@ void generatePieceBoards(std::vector<Move>& newMoves, const Board& current, piec
 
       to = bitBoardToPos(individualMove);
 
-      if (individualMove & current.getEmptySquares()) {
+      if (individualMove & empty) {
         newMoves.push_back(Move(from, to, REGULAR));
       }
-      else if (individualMove & current.getBByPiece(enPassat)) {
+      else if (individualMove & ep) {
         newMoves.push_back(Move(from, to, EP_CAPTURE));
       }
       else {

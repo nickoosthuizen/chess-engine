@@ -2,13 +2,13 @@
 #include <functional>
 #include <vector>
 #include <climits>
+#include <bit>
 
 #include "evaluate.h"
 #include "Board.h"
 #include "Move.h"
 #include "moveGen.h"
 #include "constants.h"
-#include "utilFunctions.h"
 
 int miniMaxAlphaBeta(Board& state, int alpha, int beta, bool isMax, color side, unsigned int maxDepth, std::function<int(const Board&, color)> eval) {
   int curScore, bestScore;
@@ -97,9 +97,17 @@ int noMovesAvailable(const Board& b, color side) {
 }
 
 int pieceCountScore(const Board& b, color side) {
-  return ((populationCount(b.getBByPieceAndColor(pawns, side)) * PAWN_VAL) + 
-          (populationCount(b.getBByPieceAndColor(knights, side)) * KNIGHT_VAL) + 
-          (populationCount(b.getBByPieceAndColor(bishops, side)) * BISHOP_VAL) + 
-          (populationCount(b.getBByPieceAndColor(rooks, side)) * ROOK_VAL) + 
-          (populationCount(b.getBByPieceAndColor(queens, side)) * QUEEN_VAL));
+  color opposing = side == white ? black : white;
+  uint64_t sidePieces = b.getBByColor(side);
+  uint64_t opposingPieces = b.getBByColor(opposing);
+  uint64_t pns = b.getBByPiece(pawns);
+  uint64_t nts = b.getBByPiece(knights);
+  uint64_t bsps = b.getBByPiece(bishops);
+  uint64_t rks = b.getBByPiece(rooks);
+  uint64_t qns = b.getBByPiece(queens);
+  return (((std::popcount(sidePieces & pns) - std::popcount(opposingPieces & pns)) * PAWN_VAL) + 
+          ((std::popcount(sidePieces & nts) - std::popcount(opposingPieces & nts)) * KNIGHT_VAL) + 
+          ((std::popcount(sidePieces & bsps) - std::popcount(opposingPieces & bsps)) * BISHOP_VAL) + 
+          ((std::popcount(sidePieces & rks) - std::popcount(opposingPieces & rks))* ROOK_VAL) + 
+          ((std::popcount(sidePieces & qns) - std::popcount(opposingPieces & qns)) * QUEEN_VAL));
 }

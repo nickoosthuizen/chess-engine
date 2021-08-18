@@ -2,5 +2,5 @@
 
 int main(int argc, char *argv[]) {
   Game g;
-  g.handleInput();
+  g.suggestMove();
 }

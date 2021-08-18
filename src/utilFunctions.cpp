@@ -1,6 +1,5 @@
 #include <vector>
 #include <string>
-#include <bit>
 
 #include "utilFunctions.h"
 #include "constants.h"
@@ -141,10 +140,6 @@ uint16_t bitBoardToPos(uint64_t b) {
   else if (b & RANK_8) pos += 56;
 
   return pos;
-}
-
-int populationCount(uint64_t n) {
-  return std::popcount(n);
 }
 
 bool isValidFen(std::string fen) {
