@@ -13,4 +13,6 @@ set(SOURCES
   evaluate.cpp
 )
 
+add_compile_options(-Wall -Wextra)
+
 add_executable(${BINARY} ${SOURCES})

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include "string.h"
 
 void split(std::string toSplit, std::string delimiter, std::vector<std::string> &splitStrings);
 uint64_t squareToBit(std::string square);
@@ -12,8 +13,8 @@ std::string bitToSquare(uint64_t bit);
 std::string posToSquare(uint16_t pos);
 bool isWholeNumber(const std:: string& s);
 
-uint64_t posToBitBoard(uint16_t pos);
-uint16_t bitBoardToPos(uint64_t b);
+inline uint64_t posToBitBoard(uint16_t pos) { return 1ULL << pos; }
+inline uint16_t bitBoardToPos(uint64_t b) { return ffsll(b) - 1; }
 
 bool isValidFen(std::string fen); 
 
