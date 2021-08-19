@@ -133,6 +133,6 @@ void Game::display() {
 }
 
 void Game::suggestMove() {
-  Move best = pickMove(m_state, 4, pieceCountScore);
+  Move best = pickMove(m_state, 4);
   std::cout << "engine suggests: " << best.toString() << std::endl;
 }

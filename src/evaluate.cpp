@@ -1,5 +1,3 @@
-
-#include <functional>
 #include <vector>
 #include <climits>
 
@@ -9,7 +7,7 @@
 #include "moveGen.h"
 #include "constants.h"
 
-int miniMaxAlphaBeta(Board& state, int alpha, int beta, bool isMax, color side, unsigned int maxDepth, std::function<int(const Board&, color)> eval) {
+int miniMaxAlphaBeta(Board& state, int alpha, int beta, bool isMax, color side, unsigned int maxDepth) {
   int curScore, bestScore;
   bool movesAvailable = false;
 
@@ -25,7 +23,7 @@ int miniMaxAlphaBeta(Board& state, int alpha, int beta, bool isMax, color side, 
       state.makeMove(moves[i]);
       if (!isInCheck(state, turn)) {
         movesAvailable = true;
-        curScore = eval(state, side);
+        curScore = pieceCountScore(state, side);
         if ((isMax && bestScore < curScore) || (!isMax && curScore < bestScore)) {
           bestScore = curScore;
         }   
@@ -39,7 +37,7 @@ int miniMaxAlphaBeta(Board& state, int alpha, int beta, bool isMax, color side, 
     state.makeMove(moves[i]);
     if (!isInCheck(state, turn)) {
       movesAvailable = true;
-      curScore = miniMaxAlphaBeta(state, alpha, beta, !isMax, side, maxDepth - 1, eval);
+      curScore = miniMaxAlphaBeta(state, alpha, beta, !isMax, side, maxDepth - 1);
       if (isMax && alpha < curScore) alpha = curScore;
       else if (!isMax && curScore < beta) beta = curScore;
     }
@@ -54,7 +52,7 @@ int miniMaxAlphaBeta(Board& state, int alpha, int beta, bool isMax, color side, 
   }
 }
 
-Move pickMove(Board& state, unsigned int maxDepth, std::function<int(const Board&, color)> eval) {
+Move pickMove(Board& state, unsigned int maxDepth) {
   Move bestMove;
   int bestScore, curScore;
 
@@ -68,7 +66,7 @@ Move pickMove(Board& state, unsigned int maxDepth, std::function<int(const Board
   for (int i = 0; i < moves.size(); ++i) {
     state.makeMove(moves[i]);
     if (!isInCheck(state, turn)) {
-      curScore = miniMaxAlphaBeta(state, bestScore, INT_MAX, false, state.getTurn(), maxDepth - 1, eval);
+      curScore = miniMaxAlphaBeta(state, bestScore, INT_MAX, false, state.getTurn(), maxDepth - 1);
       if (bestScore < curScore) {
         bestScore = curScore;
         bestMove = moves[i];
