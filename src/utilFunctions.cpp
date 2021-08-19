@@ -116,31 +116,6 @@ bool isWholeNumber(const std:: string& s) {
   return !s.empty() && it == s.end();
 }
 
-uint64_t posToBitBoard(uint16_t pos) { 
-  return (1ULL << pos); 
-}
-
-uint16_t bitBoardToPos(uint64_t b) {
-  uint16_t pos = 0;
-  if (b & FILE_A) pos += 7;
-  else if (b & FILE_B) pos += 6;
-  else if (b & FILE_C) pos += 5;
-  else if (b & FILE_D) pos += 4;
-  else if (b & FILE_E) pos += 3;
-  else if (b & FILE_F) pos += 2;
-  else if (b & FILE_G) pos += 1;
-
-  if (b & RANK_2) pos += 8;
-  else if (b & RANK_3) pos += 16;
-  else if (b & RANK_4) pos += 24;
-  else if (b & RANK_5) pos += 32;
-  else if (b & RANK_6) pos += 40;
-  else if (b & RANK_7) pos += 48;
-  else if (b & RANK_8) pos += 56;
-
-  return pos;
-}
-
 bool isValidFen(std::string fen) {
   std::vector<std::string> fields;
   std::vector<std::string> rows;

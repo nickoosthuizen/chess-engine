@@ -4,6 +4,7 @@
 #include "moveGen.h"
 #include "constants.h"
 #include "board.h"
+#include "pieceShifts.h"
 
 TEST(shiftTests, northSouthOut) {
   EXPECT_EQ(oneSouth(0x0000000000000001), 0);
@@ -108,12 +109,7 @@ TEST(pawnTests, blackPawnAttack) {
   EXPECT_EQ(blackPawnAttack(0xFF000000, 0x00FF0000), 0x00FF0000);
 }
 
-TEST(knightTests, multKnightMove) {
-  EXPECT_EQ(multKnightMove(WHITE_START & KNIGHT_START, ~(BLACK_START | WHITE_START), 0), 0x0000000000A50000);
-  EXPECT_EQ(multKnightMove(BLACK_START & KNIGHT_START, ~(BLACK_START | WHITE_START), 0), 0x0000A50000000000);
-  EXPECT_EQ(multKnightMove(0x0000100000, 0xFFFFFFFFFF, 0), 0x2844004428);
-}
-
+/*
 TEST(bishopTests, bishopMove) {
   EXPECT_EQ(bishopMove(WHITE_START & BISHOP_START, ~(BLACK_START | WHITE_START), BLACK_START), 0);
   EXPECT_EQ(bishopMove(BLACK_START & BISHOP_START, ~(BLACK_START | WHITE_START), WHITE_START), 0);
@@ -129,6 +125,7 @@ TEST(rookTests, rookMove) {
   EXPECT_EQ(rookMove(0x0000000008000000, 0, 0xFFFFFFFFFFFFFFFF), 0x0000000814080000);
   EXPECT_EQ(rookMove(0x0000000042000000, 0x0000FFFFBDFF0000, 0xff02000000004000), 0x00024242bd424000);
 }
+*/
 
 /*
 TEST(generateTests, genPawnBoards) {

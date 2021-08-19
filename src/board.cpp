@@ -367,9 +367,8 @@ std::string Board::toFen() {
   char curPiece;
   std::string fen = "";
 
-  int n = 63;
   int emptyCounter = 0;
-  for (n; 0 <= n; --n) {
+  for (int n = 63; 0 <= n; --n) {
     curBit = posToBitBoard(n);
     if (curBit & getEmptySquares()) {
       emptyCounter++;
@@ -399,6 +398,10 @@ std::string Board::toFen() {
         case kings:
           curPiece = 'k';
           break;
+        case enPassat:
+        case castlingRights:
+        case notAPiece:
+          return "Board is corrupted";
       }
       if (curBit & m_colors[white]) curPiece = toupper(curPiece);
       fen += curPiece;

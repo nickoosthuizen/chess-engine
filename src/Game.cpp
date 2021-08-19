@@ -71,9 +71,8 @@ void Game::handleNewFen(std::string fen) {
 }
 
 void Game::handleMove(std::string m) {
-  std::vector<Move> moves;
+  std::vector<Move> moves = generateMoves(m_state);
   std::vector<std::string> moveStrings;
-  generateMoves(moves, m_state);
   int i;
   for (i = 0; i < moves.size(); ++i) {
     if (moves[i].toString() == m) break;
@@ -124,6 +123,7 @@ void Game::display() {
   }
   std::cout << "-----------------" << std::endl;
 
+  std::cout << "Fen: " << fen << std::endl;
   std::cout << "Turn to Move: " << fields[1] << std::endl;
   std::cout << "Castling Rights: " << fields[2] << std::endl;
   std::cout << "Square currently en passat: " << fields[3] << std::endl;
@@ -133,6 +133,6 @@ void Game::display() {
 }
 
 void Game::suggestMove() {
-  Move best = pickMove(m_state, 4, pieceCountScore);
+  Move best = pickMove(m_state, 4);
   std::cout << "engine suggests: " << best.toString() << std::endl;
 }

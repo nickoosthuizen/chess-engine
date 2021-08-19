@@ -11,6 +11,10 @@ set(SOURCES
   perft.cpp
   Game.cpp
   evaluate.cpp
+  pieceShifts.cpp 
+  MoveGenLookupTbl.cpp
 )
+
+add_compile_options(-Wall -Wextra)
 
 add_executable(${BINARY} ${SOURCES})

@@ -16,8 +16,7 @@ unsigned int perft(int depth, Board& b) {
     return 1;
   }
 
-  std::vector<Move> moves;
-  generateMoves(moves, b);
+  std::vector<Move> moves = generateMoves(b);
 
   for (int i = 0; i < moves.size(); ++i) {
     b.makeMove(moves[i]);
@@ -34,9 +33,8 @@ void divide(int depth, Board& b) {
   if (depth == 0) return;
   color turn = b.getTurn();
 
-  std::vector<Move> moves;
-  std::vector<int> numMovesProduced;
-  generateMoves(moves, b);
+  std::vector<Move> moves = generateMoves(b);
+  std::vector<int> numMovesProduced; 
   
   for (int i = 0; i < moves.size(); ++i) {
     b.makeMove(moves[i]);

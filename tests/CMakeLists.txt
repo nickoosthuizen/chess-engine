@@ -12,6 +12,8 @@ set(SOURCES
   ../src/utilFunctions.cpp
   ../src/Move.cpp
   ../src/perft.cpp
+  ../src/MoveGenLookupTbl.cpp
+  ../src/pieceShifts.cpp
 )
 
 include(FetchContent)
