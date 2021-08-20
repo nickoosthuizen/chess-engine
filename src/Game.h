@@ -6,6 +6,12 @@
 
 #include "Board.h"
 
+enum GameState {
+  ongoing, 
+  checkmate,
+  stalemate,
+  draw
+};    
 class Game {
   public:
     void handleInput();
@@ -13,6 +19,8 @@ class Game {
     void handleMove(std::string input);
     void suggestMove();
     void display();
+    void play();
+    GameState getGameState();
 
   private:
     Board m_state;

@@ -26,6 +26,9 @@ void Game::handleInput() {
     else if (words[0] == "suggest") {
       suggestMove();
     }
+    else if (words[0] == "play") {
+      play();
+    }
 
     if (words.size() < 2) continue;
 
@@ -133,6 +136,66 @@ void Game::display() {
 }
 
 void Game::suggestMove() {
-  Move best = pickMove(m_state, 4);
+  Move best = pickMove(m_state, 5);
   std::cout << "engine suggests: " << best.toString() << std::endl;
+}
+
+void Game::play() {
+  Move aimove;
+  std::string input;
+  GameState status;
+  std::cout << "Starting Game" << std::endl;
+  
+  while((status = getGameState()) == ongoing) {
+    display();
+    if (m_state.getTurn() == white) {
+      std::cout << "Enter Move: " << std::endl;
+      getline(std::cin, input);
+      handleMove(input);
+    }
+    else {
+      m_history.push_back(m_state);
+      aimove = pickMove(m_state, 5);
+      m_state.makeMove(aimove);
+    }
+  }
+
+  if (status == draw) {
+    std::cout << "Draw" << std::endl;
+  }
+  else if (status == stalemate) {
+    std::cout << "Stalemate" << std::endl;
+  }
+  else if (status == checkmate) {
+    std::string winner = (m_state.getTurn() == white) ? "black" : "white";
+    std::cout << winner << " wins" << std::endl;
+  }
+
+  m_state = Board();
+  m_history.clear();
+}
+
+GameState Game::getGameState() {
+  if (75 <= m_state.getHalfClock()) return draw;
+
+  std::vector<Move> moves;
+  generateMoves(moves, m_state);
+  bool movesAvailable = false;
+
+  color turn = m_state.getTurn();
+  for (int i = 0; i < moves.size(); ++i) {
+    m_state.makeMove(moves[i]);
+    if (!isInCheck(m_state, turn)) {
+      movesAvailable = true;
+      m_state.unMakeMove();
+      break;
+    }
+    m_state.unMakeMove();
+  }
+
+  if (movesAvailable) return ongoing;
+  else {
+    if (isInCheck(m_state, turn)) return checkmate;
+    else return stalemate;
+  }
 }

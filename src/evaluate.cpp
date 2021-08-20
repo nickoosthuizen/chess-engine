@@ -15,23 +15,12 @@ int miniMaxAlphaBeta(Board& state, int alpha, int beta, bool isMax, color side, 
 
   color turn = state.getTurn();
 
+  if (maxDepth == 0) {
+    return pieceCountScore(state, side);
+  }
+
   std::vector<Move> moves;
   generateMoves(moves, state);
-
-  if (maxDepth == 0) {
-    for (int i = 0; i < moves.size(); ++i) {
-      state.makeMove(moves[i]);
-      if (!isInCheck(state, turn)) {
-        movesAvailable = true;
-        curScore = pieceCountScore(state, side);
-        if ((isMax && bestScore < curScore) || (!isMax && curScore < bestScore)) {
-          bestScore = curScore;
-        }   
-      }
-      state.unMakeMove();
-    }
-    return (!movesAvailable) ? noMovesAvailable(state, side) : bestScore;
-  }
 
   for (int i = 0; i < moves.size(); ++i) {
     state.makeMove(moves[i]);
@@ -62,11 +51,10 @@ Move pickMove(Board& state, unsigned int maxDepth) {
   generateMoves(moves, state);
 
   bestScore = INT_MIN;
-  bestMove = Move();
   for (int i = 0; i < moves.size(); ++i) {
     state.makeMove(moves[i]);
     if (!isInCheck(state, turn)) {
-      curScore = miniMaxAlphaBeta(state, bestScore, INT_MAX, false, state.getTurn(), maxDepth - 1);
+      curScore = miniMaxAlphaBeta(state, bestScore, INT_MAX, false, turn, maxDepth - 1);
       if (bestScore < curScore) {
         bestScore = curScore;
         bestMove = moves[i];
