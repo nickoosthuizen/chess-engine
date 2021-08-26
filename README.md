@@ -22,13 +22,13 @@ the source. This folder can have any name, such as 'build'.
 
 After pulling the repository:
 
-`mkdir build
+`mkdir build`
 
-`cd  build
+`cd  build`
 
-`cmake ..
+`cmake ..`
 
-`cmake --build .
+`cmake --build .`
 
 The engine executable will now be in the src directory and the test executable in
 test.
@@ -40,7 +40,7 @@ test.
 The chess-engine program takes no command line arguments and is simply ran 
 with:
 
-`./chess-engine
+`./chess-engine`
 
 ### Using
 
@@ -48,18 +48,18 @@ When the program is first started, the board will be in the starting position.
 
 The engine supports the following commands:
 
-`display
+`display`
 
 Print the current state of the board to the screen.
 
-`fen FEN_STRING
+`fen FEN_STRING`
 
 Update the board to the position described by FEN_STRING. FEN_STRING is 
 a string in Forsyth-Edwards Notation (not enclosed in quotes). 
 
 Example (Starting Board): rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 
-`move MOVE
+`move MOVE`
 
 Make a move on the current board. MOVE is formatted as a character and a digit
 representing the file and rank of the piece to move, and a character and a digit
@@ -72,21 +72,21 @@ Example: h3h5 - Moves a piece from file h rank 3 to file h rank 5
 
 Promotion Example: a2a1q - Moves a pawn from file a rank 1 to file a rank 1 and promotes it to a queen
 
-`perft DEPTH
+`perft DEPTH`
 
 Output the number of legal boards at depth DEPTH that can be generated from the 
 current position.
 
-`divide DEPTH
+`divide DEPTH`
 
 Enumerate the legal moves from the current board and Output the perft of each
 at DEPTH - 1.
 
-`suggest
+`suggest`
 
 Ask the chess engine to select a move to suggest at the current board.
 
-`play
+`play`
 
 Start playing a game against the engine. The user starts first as white.
 The board is displayed at each move and the user is prompted to choose 
